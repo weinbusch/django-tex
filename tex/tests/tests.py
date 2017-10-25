@@ -33,7 +33,12 @@ class ComplingTemplates(TestCase):
 
     def test_compile_template_to_pdf(self):
         template_name = 'tests/test.tex'
-        context = {'test': 'a simple test'}
+        context = {
+            'test': 'a simple test', 
+            'number': Decimal('1000.10'), 
+            'date': datetime.date(2017, 10, 25),
+            'names': ['Arjen', 'Jerome', 'Robert'], 
+        }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
 
@@ -41,9 +46,16 @@ class RenderingTemplates(TestCase):
 
     def test_render_template(self):
         template_name = 'tests/test.tex'
-        context = {'test': 'a simple test'}
+        context = {
+            'test': 'a simple test', 
+            'number': Decimal('1000.10'), 
+            'date': datetime.date(2017, 10, 25),
+            'names': ['Arjen', 'Jerome', 'Robert'], 
+        }
         output = render_template_with_context(template_name, context)
-        self.assertIn('a simple test', output)
+        self.assertIn('\\section{a simple test}', output)
+        self.assertIn('This is a number: 1000,10.', output)
+        self.assertIn('And this is a date: 25.10.2017.', output)
 
 class Engine(TestCase):
 
