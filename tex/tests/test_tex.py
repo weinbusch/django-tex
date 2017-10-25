@@ -1,5 +1,4 @@
 from unittest import TestCase
-from django.template import Template, Context
 
 from decimal import Decimal
 import datetime
@@ -58,6 +57,12 @@ class Engine(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, '\\section{bar}')
 
+    def test_localize_decimal(self):
+        context = {'foo': Decimal('1000.10')}
+        template_string="{{ foo|localize }}"
+        output = self.render_template(template_string, context)
+        self.assertEqual(output, '1000,10')
+    
     def test_localize_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
         template_string="{{ foo|localize }}"
@@ -69,9 +74,3 @@ class Engine(TestCase):
         template_string="{{ '{:%d. %B %Y}'.format(foo) }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25. Oktober 2017')
-
-    def test_localize_decimal(self):
-        context = {'foo': Decimal('1000.10')}
-        template_string="{{ foo|localize }}"
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, '1000,10')
