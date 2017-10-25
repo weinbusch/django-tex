@@ -16,3 +16,7 @@ TEMPLATES = [
         'APP_DIRS': True,
     },
 ]
+
+LANGUAGE_CODE = 'de-de'
+
+USE_L10N = True

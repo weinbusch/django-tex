@@ -2,7 +2,7 @@ import os
 from subprocess import Popen, PIPE
 import tempfile
 
-from django.template import loader
+from tex.engine import engine
 
 class TexError(Exception):
     pass
@@ -20,9 +20,12 @@ def run_tex(source):
     return pdf
 
 def compile_template_to_pdf(template_name, context):
-    template = get_template(template_name)
-    source = template.render(context)
+    source = render_template_with_context(template_name, context)
     return run_tex(source)
 
+def render_template_with_context(template_name, context):
+    template = get_template(template_name)
+    return template.render(context)
+
 def get_template(template_name):
-    return loader.get_template(template_name)
+    return engine.get_template(template_name)
