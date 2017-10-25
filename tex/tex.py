@@ -1,7 +1,8 @@
+import os
 from subprocess import Popen, PIPE
 import tempfile
-import shutil
-import os
+
+from django.template import loader
 
 class TexError(Exception):
     pass
@@ -24,4 +25,4 @@ def compile_template_to_pdf(template_name, context):
     return run_tex(source)
 
 def get_template(template_name):
-    pass
+    return loader.get_template(template_name)

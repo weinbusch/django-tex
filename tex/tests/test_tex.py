@@ -14,12 +14,6 @@ WRONG_SOURCE = "\
 This is a test!\n\
 "
 
-CORRECT_TEMPLATE = "\
-\\documentclass{article}\n\
-\\begin{document}\n\
-This is a {{ test }}!\n\
-\\end{document}"
-
 class TexTest(TestCase):
 
     def test_run_tex(self):
@@ -31,7 +25,7 @@ class TexTest(TestCase):
             pdf = run_tex(WRONG_SOURCE)
 
     def test_compile_template_to_pdf(self):
-        template_name = ''
-        context = {'test': 'simple test'}
+        template_name = 'tests/test.tex'
+        context = {'test': 'a simple test'}
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
