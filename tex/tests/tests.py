@@ -3,8 +3,8 @@ from unittest import TestCase
 from decimal import Decimal
 import datetime
 
-from tex.tex import run_tex, compile_template_to_pdf, render_template_with_context
-from tex.tex import TexError
+from tex.core import run_tex, compile_template_to_pdf, render_template_with_context
+from tex.core import TexError
 
 from tex.engine import engine
 
