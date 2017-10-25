@@ -41,10 +41,10 @@ class ComplingTemplates(TestCase):
 class RenderingTemplates(TestCase):
 
     def test_render_template(self):
-        template_name = 'tests/argument.tex'
-        context = {'argument': 'This is an argument!'}
+        template_name = 'tests/test.tex'
+        context = {'test': 'a simple test'}
         output = render_template_with_context(template_name, context)
-        self.assertEqual('\\section{This is an argument!}', output)
+        self.assertIn('a simple test', output)
 
 class Engine(TestCase):
 
@@ -52,9 +52,14 @@ class Engine(TestCase):
         template = engine.from_string(template_string)
         return template.render(context)
 
+    def test_whitespace_control(self):
+        context = {'foo': 'bar'}
+        template_string="\\section{ {{- foo -}} }"
+        output = self.render_template(template_string, context)
+        self.assertEqual(output, '\\section{bar}')
+
     def test_localize_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
-        # template_string="{{ '{:%d.%m.%Y}'.format(foo) }}"
         template_string="{{ foo|localize }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25.10.2017')
