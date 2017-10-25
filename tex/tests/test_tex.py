@@ -52,14 +52,15 @@ class Engine(TestCase):
         template = engine.from_string(template_string)
         return template.render(context)
 
-    def test_render_date(self):
+    def test_localize_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
-        template_string='{{ foo }}'
+        # template_string="{{ '{:%d.%m.%Y}'.format(foo) }}"
+        template_string="{{ foo|localize }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25.10.2017')
 
-    def test_render_decimal(self):
-        context = {'foo': Decimal('10.10')}
-        template_string='{{ foo }}'
+    def test_localize_decimal(self):
+        context = {'foo': Decimal('1000.10')}
+        template_string="{{ foo|localize }}"
         output = self.render_template(template_string, context)
-        self.assertEqual(output, '10,10')
+        self.assertEqual(output, '1000,10')
