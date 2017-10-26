@@ -11,7 +11,7 @@ templating engine for template rendering.
 
 1. Add "django_tex" to your `INSTALLED_APPS` setting:
 
-```
+```python
 INSTALLED_APPS = [
     ...
     'django_tex',
@@ -20,7 +20,7 @@ INSTALLED_APPS = [
 
 2. Create a Latex template in your template directory:
 
-```
+```tex
 # test.tex
 \documentclass{article}
 
@@ -33,7 +33,7 @@ INSTALLED_APPS = [
 
 3. Use "compile_template_to_pdf" in your code to get the Pdf file as a bytes object:
 
-```
+```python
 from django_tex.core import compile_template_to_pdf
 
 template_name = 'test.tex'
