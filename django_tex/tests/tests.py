@@ -3,10 +3,10 @@ from unittest import TestCase
 from decimal import Decimal
 import datetime
 
-from tex.core import run_tex, compile_template_to_pdf, render_template_with_context
-from tex.core import TexError
+from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
+from django_tex.core import TexError
 
-from tex.engine import engine
+from django_tex.engine import engine
 
 class RunningTex(TestCase):
 

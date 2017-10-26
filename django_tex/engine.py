@@ -22,7 +22,7 @@ params = {
     'DIRS': [],
     'APP_DIRS': True,
     'OPTIONS': {
-        'environment': 'tex.engine.environment'
+        'environment': 'django_tex.engine.environment'
     },
 }
 

@@ -2,7 +2,7 @@ import os
 from subprocess import Popen, PIPE
 import tempfile
 
-from tex.engine import engine
+from django_tex.engine import engine
 
 class TexError(Exception):
     pass

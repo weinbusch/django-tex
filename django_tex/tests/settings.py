@@ -6,8 +6,8 @@ Django settings for running tests
 SECRET_KEY = 'secret'
 
 INSTALLED_APPS = [
-    'tex',
-    'tex.tests',
+    'django_tex',
+    'django_tex.tests',
 ]
 
 TEMPLATES = [
