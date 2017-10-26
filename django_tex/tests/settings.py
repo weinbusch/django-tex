@@ -17,6 +17,6 @@ TEMPLATES = [
     },
 ]
 
-LANGUAGE_CODE = 'de-de'
+LANGUAGE_CODE = 'de'
 
 USE_L10N = True

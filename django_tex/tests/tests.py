@@ -1,4 +1,5 @@
 from unittest import TestCase
+from django.test.utils import override_settings
 
 from decimal import Decimal
 import datetime
@@ -37,7 +38,7 @@ class ComplingTemplates(TestCase):
             'test': 'a simple test', 
             'number': Decimal('1000.10'), 
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Jerome', 'Robert'], 
+            'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
@@ -50,12 +51,13 @@ class RenderingTemplates(TestCase):
             'test': 'a simple test', 
             'number': Decimal('1000.10'), 
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Jerome', 'Robert'], 
+            'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
         }
         output = render_template_with_context(template_name, context)
         self.assertIn('\\section{a simple test}', output)
         self.assertIn('This is a number: 1000,10.', output)
         self.assertIn('And this is a date: 25.10.2017.', output)
+        self.assertIn('\\item Arjen', output)
 
 class Engine(TestCase):
 
@@ -68,6 +70,13 @@ class Engine(TestCase):
         template_string="\\section{ {{- foo -}} }"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '\\section{bar}')
+
+    @override_settings(LANGUAGE_CODE='en')
+    def test_override_l10n_setting(self):
+        context = {'foo': Decimal('1000.10')}
+        template_string="{{ foo|localize }}"
+        output = self.render_template(template_string, context)
+        self.assertEqual(output, '1000.10')
 
     def test_localize_decimal(self):
         context = {'foo': Decimal('1000.10')}
@@ -86,3 +95,9 @@ class Engine(TestCase):
         template_string="{{ '{:%d. %B %Y}'.format(foo) }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25. Oktober 2017')
+
+    def test_rendering_unicode(self):
+        context = {'foo': 'äüß'}
+        template_string="{{ foo }}"
+        output = self.render_template(template_string, context)
+        self.assertEqual(output, 'äüß')
