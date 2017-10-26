@@ -1,7 +1,5 @@
 
-==========
-DJANGO-TEX
-==========
+# DJANGO-TEX
 
 Django-tex is a simple Django app to render Latex templates and compile
 them into Pdf files.
@@ -9,18 +7,20 @@ them into Pdf files.
 Django-tex requires a local Latex installation and uses the jinja2 
 templating engine for template rendering.
 
-Quick start
------------
+## Quick start
 
 1.  Add "django_tex" to your INSTALLED_APPS setting:
 
+    ```
     INSTALLED_APPS = [
         ...
         'django_tex',
     ]
+    ```
 
 2.  Create a Latex template in your template directory:
 
+    ```
     # test.tex
     \documentclass{article}
 
@@ -29,18 +29,20 @@ Quick start
     \section{ {{- foo -}} }
 
     \end{document}
+    ```
 
 3.  Use "compile_template_to_pdf" in your code to get the Pdf file 
     as a bytes object:
 
+    ```
     from django_tex.core import compile_template_to_pdf
 
     template_name = 'test.tex'
     context = {'foo': 'Bar'}
     pdf = compile_template_to_pdf(template_name, context)
+    ```
 
-SOME NOTES ON USAGE
--------------------
+## Some notes on usage
 
 Since django-tex uses jinja, you can use jinja's whitespace control in 
 Latex templates. For example, "\section{ {{ foo }} }" would be rendered as 
