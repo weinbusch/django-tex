@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-tex',
-    version='0.1',
+    version='0.2',
     description='A simple Django app to render Latex templates and compile them into Pdf files.',
     url='https://github.com/weinbusch/django-tex',
     author='Martin Bierbaum',

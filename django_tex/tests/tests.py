@@ -101,3 +101,17 @@ class Engine(TestCase):
         template_string="{{ foo }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, 'äüß')
+
+    def test_linebreaks(self):
+        context = {
+            'brecht': 
+            'Ich sitze am Straßenhang.\n' +
+            'Der Fahrer wechselt das Rad.'
+        }
+        template_string="{{ brecht | linebreaks }}"
+        output = self.render_template(template_string, context)
+        self.assertEqual(
+            output, 
+            'Ich sitze am Straßenhang.\\\\\n'+
+            'Der Fahrer wechselt das Rad.'
+        )
