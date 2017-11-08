@@ -1,5 +1,7 @@
 from unittest import TestCase
+
 from django.test.utils import override_settings
+from django.core.exceptions import ValidationError
 
 from decimal import Decimal
 import datetime
@@ -8,6 +10,8 @@ from django_tex.core import run_tex, compile_template_to_pdf, render_template_wi
 from django_tex.core import TexError
 
 from django_tex.engine import engine
+
+from tests.models import TemplateFile
 
 class RunningTex(TestCase):
 
@@ -115,3 +119,17 @@ class Engine(TestCase):
             'Ich sitze am Straßenhang.\\\\\n'+
             'Der Fahrer wechselt das Rad.'
         )
+
+class Models(TestCase):
+    '''
+    TeXTemplateFile contains the relative path to a tex template (e.g. django_tex/test.tex)
+    and validates if this template can be loaded.abs
+
+    Since TeXTemplateFile is an abstract base class, it is used here in a subclassed version 'TemplateFile'
+    '''
+
+    def test_validation(self):
+        TemplateFile(title='valid', name='tests/test.tex').full_clean()
+
+        with self.assertRaises(ValidationError):
+            TemplateFile(title='invalid', name='template/doesnt.exist').full_clean()
