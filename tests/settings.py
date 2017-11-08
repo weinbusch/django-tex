@@ -7,7 +7,7 @@ SECRET_KEY = 'secret'
 
 INSTALLED_APPS = [
     'django_tex',
-    'django_tex.tests',
+    'tests',
 ]
 
 LANGUAGE_CODE = 'de'
