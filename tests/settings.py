@@ -23,3 +23,7 @@ DATABASES = {
 LANGUAGE_CODE = 'de'
 
 USE_L10N = True
+
+ROOT_URLCONF = 'tests.urls'
+
+DEBUG = True

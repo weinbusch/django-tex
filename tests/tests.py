@@ -2,6 +2,7 @@ from unittest import TestCase
 
 from django.test.utils import override_settings
 from django.core.exceptions import ValidationError
+from django.http import HttpResponse
 
 from decimal import Decimal
 import datetime
@@ -10,6 +11,8 @@ from django_tex.core import run_tex, compile_template_to_pdf, render_template_wi
 from django_tex.core import TexError
 
 from django_tex.engine import engine
+
+from django_tex.views import render_to_pdf
 
 from tests.models import TemplateFile
 
@@ -133,3 +136,17 @@ class Models(TestCase):
 
         with self.assertRaises(ValidationError):
             TemplateFile(title='invalid', name='template/doesnt.exist').full_clean()
+
+class Views(TestCase):
+
+    def test_render_to_pdf(self):
+        template_name = 'tests/test.tex'
+        context = {
+            'test': 'a simple test', 
+            'number': Decimal('1000.10'), 
+            'date': datetime.date(2017, 10, 25),
+            'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
+        }
+        response = render_to_pdf(template_name, context)
+        self.assertIsInstance(response, HttpResponse)
+        self.assertEquals(response['Content-Type'], 'application/pdf')
