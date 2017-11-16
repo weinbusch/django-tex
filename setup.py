@@ -2,13 +2,12 @@ from setuptools import setup, find_packages
 
 setup(
     name='django-tex',
-    # version='0.2',
     description='A simple Django app to render Latex templates and compile them into Pdf files.',
     url='https://github.com/weinbusch/django-tex',
     author='Martin Bierbaum',
     license='MIT',
     keywords='django latex jinja2',
-    packages=find_packages(),
+    packages=find_packages(exclude=['tests']),
     use_scm_version=True,
     setup_requires=[
         'setuptools_scm',
