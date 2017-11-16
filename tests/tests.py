@@ -147,6 +147,7 @@ class Views(TestCase):
             'date': datetime.date(2017, 10, 25),
             'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
         }
-        response = render_to_pdf(template_name, context)
+        response = render_to_pdf(template_name, context, filename='test.pdf')
         self.assertIsInstance(response, HttpResponse)
         self.assertEquals(response['Content-Type'], 'application/pdf')
+        self.assertEquals(response['Content-Disposition'], 'filename="test.pdf"')

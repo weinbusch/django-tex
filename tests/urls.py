@@ -14,7 +14,7 @@ def pdf_view(request):
         'date': datetime.date(2017, 10, 25),
         'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
     }
-    return render_to_pdf(template_name, context)
+    return render_to_pdf(template_name, context, filename='test.pdf')
 
 urlpatterns = [
     url(r'', pdf_view),

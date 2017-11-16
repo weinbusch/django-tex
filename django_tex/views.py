@@ -11,6 +11,6 @@ class PDFResponse(HttpResponse):
         self.write(content)
 
 
-def render_to_pdf(template_name, context):
+def render_to_pdf(template_name, context, filename=None):
     pdf = compile_template_to_pdf(template_name, context)
-    return PDFResponse(pdf)
+    return PDFResponse(pdf, filename=filename)
