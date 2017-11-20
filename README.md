@@ -1,10 +1,10 @@
 
 # DJANGO-TEX
 
-Django-tex is a simple Django app to render Latex templates and compile
-them into Pdf files.
+Django-tex is a simple Django app to render LaTeX templates and compile
+them into PDF files.
 
-Django-tex requires a local Latex installation and uses the jinja2 
+Django-tex requires a local LaTeX installation and uses the jinja2 
 templating engine for template rendering.
 
 ## Quick start
@@ -18,7 +18,7 @@ INSTALLED_APPS = [
 ]
 ```
 
-2. Create a Latex template in your template directory:
+2. Create a LaTeX template in your template directory:
 
 ```tex
 # test.tex
@@ -31,20 +31,31 @@ INSTALLED_APPS = [
 \end{document}
 ```
 
-3. Use "compile_template_to_pdf" in your code to get the Pdf file as a bytes object:
+3. Use "compile_template_to_pdf" in your code to get the PDF file as a bytes object:
 
 ```python
 from django_tex.core import compile_template_to_pdf
 
 template_name = 'test.tex'
 context = {'foo': 'Bar'}
-pdf = compile_template_to_pdf(template_name, context)
+PDF = compile_template_to_pdf(template_name, context)
+```
+
+Or use `render_to_pdf` to generate a HTTPResponse containing the PDF file:
+
+```python
+from django_tex.views import render_to_pdf
+
+def view(request):
+    template_name = 'test.tex'
+    context = {'foo': 'Bar'}
+    return render_to_pdf(template_name, context, filename='test.pdf')
 ```
 
 ## Some notes on usage
 
 Since django-tex uses jinja, you can use jinja's whitespace control in 
-Latex templates. For example, `\section{ {{ foo }} }` would be rendered as 
+LaTeX templates. For example, `\section{ {{ foo }} }` would be rendered as 
 `\section{ Bar }` with the above context; `\section{ {{- foo -}} }`, however, 
 gets rendered nicely as `\section{Bar}`.
 
@@ -52,3 +63,5 @@ Further, django-tex adds the custom filter `localize` to the jinja environment.
 This runs its input through `django.utils.formats.localize_input` to
 create a localized representation. The output depends on the `USE_L10N` and `LANGUAGE_CODE`
 settings. Use the filter like this: `{{ foo|localize }}`.
+
+If you want to convert linebreaks into LaTeX linebreaks (`\\`), use the `linebreaks` filter (`{{ foo | linebreaks }}`).
