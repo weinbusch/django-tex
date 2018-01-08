@@ -7,7 +7,7 @@ from jinja2 import Environment
 
 from django_tex.filters import FILTERS
 
-locale.setlocale(locale.LC_ALL, settings.LANGUAGE_CODE)
+# locale.setlocale(locale.LC_ALL, settings.LANGUAGE_CODE)
 
 def environment(**options):
     env = Environment(**options)
