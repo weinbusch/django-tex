@@ -59,6 +59,9 @@ LaTeX templates. For example, `\section{ {{ foo }} }` would be rendered as
 `\section{ Bar }` with the above context; `\section{ {{- foo -}} }`, however, 
 gets rendered nicely as `\section{Bar}`.
 
+Django's built-in filters are available. So you can use `{{ foo|date('d. F Y') }}` 
+to get `1. Januar 2018`, for instance.
+
 Further, django-tex adds the custom filter `localize` to the jinja environment.
 This runs its input through `django.utils.formats.localize_input` to
 create a localized representation. The output depends on the `USE_L10N` and `LANGUAGE_CODE`
