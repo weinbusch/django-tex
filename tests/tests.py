@@ -87,18 +87,21 @@ class Engine(DjangoTestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, '1000.10')
 
+    @override_settings(LANGUAGE_CODE='de-de')
     def test_localize_decimal(self):
         context = {'foo': Decimal('1000.10')}
         template_string="{{ foo|localize }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '1000,10')
     
+    @override_settings(LANGUAGE_CODE='de-de')
     def test_localize_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
         template_string="{{ foo|localize }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25.10.2017')
 
+    @override_settings(LANGUAGE_CODE='de-de')
     def test_format_long_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
         template_string="{{ '{:%d. %B %Y}'.format(foo) }}"
