@@ -103,7 +103,8 @@ class Engine(TestCase):
     @override_settings(LANGUAGE_CODE='de-de')
     def test_format_long_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
-        template_string="{{ '{:%d. %B %Y}'.format(foo) }}"
+        template_string="{{ foo | date('d. F Y') }}"
+        # template_string="{{ '{:%d. %B %Y}'.format(foo) }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25. Oktober 2017')
 

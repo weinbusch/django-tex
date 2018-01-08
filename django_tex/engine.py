@@ -1,17 +1,19 @@
-import locale
-
-from django.conf import settings
-from django.template.backends.jinja2 import Jinja2
 
 from jinja2 import Environment
 
-from django_tex.filters import FILTERS
+from django.template.backends.jinja2 import Jinja2
+from django.template.defaultfilters import register
 
-# locale.setlocale(locale.LC_ALL, settings.LANGUAGE_CODE)
+from django_tex.filters import FILTERS as tex_specific_filters
+
+# Django's built-in filters ...
+filters = register.filters
+# ... updated with tex specific filters
+filters.update(tex_specific_filters)
 
 def environment(**options):
     env = Environment(**options)
-    env.filters = FILTERS
+    env.filters = filters
     return env
 
 class TeXEngine(Jinja2):
