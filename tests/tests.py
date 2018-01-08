@@ -68,7 +68,7 @@ class RenderingTemplates(TestCase):
         self.assertIn('And this is a date: 25.10.2017.', output)
         self.assertIn('\\item Arjen', output)
 
-class Engine(TestCase):
+class Engine(DjangoTestCase):
 
     def render_template(self, template_string, context):
         template = engine.from_string(template_string)
