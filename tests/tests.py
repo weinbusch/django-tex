@@ -1,6 +1,5 @@
-from unittest import TestCase
 
-from django.test import TestCase as DjangoTestCase
+from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
@@ -68,7 +67,7 @@ class RenderingTemplates(TestCase):
         self.assertIn('And this is a date: 25.10.2017.', output)
         self.assertIn('\\item Arjen', output)
 
-class Engine(DjangoTestCase):
+class Engine(TestCase):
 
     def render_template(self, template_string, context):
         template = engine.from_string(template_string)
@@ -157,7 +156,7 @@ class Views(TestCase):
         self.assertEquals(response['Content-Type'], 'application/pdf')
         self.assertEquals(response['Content-Disposition'], 'filename="test.pdf"')
 
-class TestSite(DjangoTestCase):
+class TestSite(TestCase):
 
     def test_entry_list_pdf(self):
         response = self.client.get(reverse('entry_list_pdf'))
