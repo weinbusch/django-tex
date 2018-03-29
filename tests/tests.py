@@ -50,7 +50,7 @@ class RunningTex(TestCase):
         self.assertIsNotNone(pdf)
 
     @override_settings(LATEX_INTERPRETER='does_not_exist')
-    def test_different_latex_interpreter(self):
+    def test_wrong_latex_interpreter(self):
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
