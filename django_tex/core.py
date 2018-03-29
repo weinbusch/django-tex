@@ -4,13 +4,17 @@ from subprocess import Popen, PIPE
 import tempfile
 
 from django_tex.engine import engine
+from django.conf import settings
+
+DEFAULT_INTERPRETER = 'lualatex'
 
 class TexError(Exception):
     pass
 
 def run_tex(source):
     with tempfile.TemporaryDirectory() as tempdir:
-        latex_command = ['pdflatex', '-output-directory', tempdir]
+        latex_interpreter = getattr(settings, 'LATEX_INTERPRETER', DEFAULT_INTERPRETER)
+        latex_command = [latex_interpreter, '-output-directory', tempdir]
         process = Popen(latex_command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         process.communicate(source.encode('utf-8'))
         if process.returncode == 1:

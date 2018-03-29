@@ -38,6 +38,28 @@ class RunningTex(TestCase):
         with self.assertRaises(TexError):
             pdf = run_tex(source)
 
+    @override_settings(LATEX_INTERPRETER='pdflatex')
+    def test_different_latex_interpreter(self):
+        source = "\
+        \\documentclass{article}\n\
+        \\begin{document}\n\
+        This is a test!\n\
+        \\end{document}"
+
+        pdf = run_tex(source)
+        self.assertIsNotNone(pdf)
+
+    @override_settings(LATEX_INTERPRETER='does_not_exist')
+    def test_different_latex_interpreter(self):
+        source = "\
+        \\documentclass{article}\n\
+        \\begin{document}\n\
+        This is a test!\n\
+        \\end{document}"
+
+        with self.assertRaises(Exception):
+            pdf = run_tex(source) # should raise
+
 class ComplingTemplates(TestCase):
 
     def test_compile_template_to_pdf(self):
