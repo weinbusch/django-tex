@@ -15,7 +15,7 @@ from django_tex.engine import engine
 
 from django_tex.views import render_to_pdf
 
-from tests.models import TemplateFile, Entry
+from tests.models import TemplateFile
 
 class RunningTex(TestCase):
 
@@ -179,18 +179,3 @@ class Views(TestCase):
         self.assertIsInstance(response, HttpResponse)
         self.assertEquals(response['Content-Type'], 'application/pdf')
         self.assertEquals(response['Content-Disposition'], 'filename="test.pdf"')
-
-class TestSite(TestCase):
-
-    def test_entry_list_pdf(self):
-        response = self.client.get(reverse('entry_list_pdf'))
-        self.assertEqual(response.status_code, 200)
-
-    def test_entry_list(self):
-        response = self.client.get(reverse('entry_list'))
-        self.assertEqual(response.status_code, 200)
-
-    def test_entry_archive(self):
-        Entry.objects.create(date=datetime.date(2017,1,1))
-        response = self.client.get(reverse('entry_archive', args=(2017,)))
-        self.assertEqual(response.status_code, 200)
