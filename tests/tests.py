@@ -40,6 +40,7 @@ class RunningTex(TestCase):
 
     @override_settings(LATEX_INTERPRETER='pdflatex')
     def test_different_latex_interpreter(self):
+        '''The default interpreter is lualatex'''
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
