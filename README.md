@@ -54,6 +54,10 @@ def view(request):
 
 ## Some notes on usage
 
+The default LaTeX interpreter is set to `lualatex`. This can be changed by the setting
+`LATEX_INTERPRETER`, for instance: `LATEX_INTERPRETER = 'pdflatex'`. Of course, the interpreter needs
+to be installed on your system for `django-tex` to work properly.
+
 Since django-tex uses jinja, you can use jinja's whitespace control in 
 LaTeX templates. For example, `\section{ {{ foo }} }` would be rendered as 
 `\section{ Bar }` with the above context; `\section{ {{- foo -}} }`, however, 
