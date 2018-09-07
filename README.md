@@ -49,7 +49,7 @@ from django_tex.views import render_to_pdf
 def view(request):
     template_name = 'test.tex'
     context = {'foo': 'Bar'}
-    return render_to_pdf(template_name, context, filename='test.pdf')
+    return render_to_pdf(request, template_name, context, filename='test.pdf')
 ```
 
 ## Some notes on usage

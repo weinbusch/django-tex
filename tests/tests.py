@@ -167,6 +167,7 @@ class Models(TestCase):
 class Views(TestCase):
 
     def test_render_to_pdf(self):
+        request = None # request is only needed to make the signature of render_to_pdf similar to the signature of django's render function
         template_name = 'tests/test.tex'
         context = {
             'test': 'a simple test', 
@@ -174,7 +175,7 @@ class Views(TestCase):
             'date': datetime.date(2017, 10, 25),
             'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
         }
-        response = render_to_pdf(template_name, context, filename='test.pdf')
+        response = render_to_pdf(request, template_name, context, filename='test.pdf')
         self.assertIsInstance(response, HttpResponse)
         self.assertEquals(response['Content-Type'], 'application/pdf')
         self.assertEquals(response['Content-Disposition'], 'filename="test.pdf"')
