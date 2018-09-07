@@ -1,12 +1,11 @@
 
+import datetime
+from decimal import Decimal
+
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
-from django.shortcuts import reverse
-
-from decimal import Decimal
-import datetime
 
 from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
 from django_tex.core import TexError
