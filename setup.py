@@ -1,8 +1,13 @@
 from setuptools import setup, find_packages
 
+with open("README.md", "r") as fh:
+    long_description = fh.read()
+
 setup(
     name='django-tex',
     description='A simple Django app to render Latex templates and compile them into Pdf files.',
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     url='https://github.com/weinbusch/django-tex',
     author='Martin Bierbaum',
     license='MIT',
