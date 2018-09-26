@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='django-tex',
-    description='A simple Django app to render Latex templates and compile them into Pdf files.',
+    description='A simple Django app to render Latex templates and compile them into PDF files.',
     long_description=long_description,
     long_description_content_type="text/markdown",
     url='https://github.com/weinbusch/django-tex',

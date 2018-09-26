@@ -7,6 +7,14 @@ them into PDF files.
 Django-tex requires a local LaTeX installation and uses the jinja2 
 templating engine for template rendering.
 
+## Installation
+
+`django-tex` is currently available on test.pypi.org. It can be installed by:
+
+```pip install --index-url https://test.pypi.org/simple/ django_tex```
+
+To make this work, the requirements (django and jinja2) may need to be installed separately via `pip install django` and `pip install jinja2`, respectively.
+
 ## Quick start
 
 1. Add "django_tex" to your `INSTALLED_APPS` setting:
