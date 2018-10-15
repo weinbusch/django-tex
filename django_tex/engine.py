@@ -3,7 +3,7 @@ from jinja2 import Environment
 
 from django.template.backends.jinja2 import Jinja2
 from django.template.defaultfilters import register
-
+from django.conf import settings
 from django_tex.filters import FILTERS as tex_specific_filters
 
 # Django's built-in filters ...
@@ -21,7 +21,7 @@ class TeXEngine(Jinja2):
 
 PARAMS = {
     'NAME': 'tex',
-    'DIRS': [],
+    'DIRS': settings.TEMPLATES[0]['DIRS'],
     'APP_DIRS': True,
     'OPTIONS': {
         'environment': 'django_tex.engine.environment'
