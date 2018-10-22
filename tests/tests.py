@@ -70,7 +70,18 @@ class ComplingTemplates(TestCase):
             'test': 'a simple test', 
             'number': Decimal('1000.10'), 
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
+            'names': ['Arjen', 'Robert', 'Mats'], 
+        }
+        pdf = compile_template_to_pdf(template_name, context)
+        self.assertIsNotNone(pdf)
+
+    def test_compile_template_with_unicode(self):
+        template_name = 'tests/test.tex'
+        context = {
+            'test': 'a simple test', 
+            'number': Decimal('1000.10'), 
+            'date': datetime.date(2017, 10, 25),
+            'names': ['Jérôme'], 
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
@@ -83,7 +94,7 @@ class RenderingTemplates(TestCase):
             'test': 'a simple test', 
             'number': Decimal('1000.10'), 
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
+            'names': ['Arjen', 'Robert', 'Mats'], 
         }
         output = render_template_with_context(template_name, context)
         self.assertIn('\\section{a simple test}', output)
@@ -133,10 +144,10 @@ class Engine(TestCase):
         self.assertEqual(output, '25. Oktober 2017')
 
     def test_rendering_unicode(self):
-        context = {'foo': 'äüß'}
+        context = {'foo': 'äüßéô'}
         template_string="{{ foo }}"
         output = self.render_template(template_string, context)
-        self.assertEqual(output, 'äüß')
+        self.assertEqual(output, 'äüßê')
 
     def test_linebreaks(self):
         context = {
@@ -175,7 +186,7 @@ class Views(TestCase):
             'test': 'a simple test', 
             'number': Decimal('1000.10'), 
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Jérôme', 'Robert', 'Mats'], 
+            'names': ['Arjen', 'Robert', 'Mats'], 
         }
         response = render_to_pdf(request, template_name, context, filename='test.pdf')
         self.assertIsInstance(response, HttpResponse)
