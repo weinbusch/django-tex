@@ -37,7 +37,7 @@ class RunningTex(TestCase):
         with self.assertRaises(TexError) as cm:
             pdf = run_tex(source)
 
-        self.assertIn('LuaTeX', cm.exception.message)
+        self.assertIn('LuaTeX', str(cm.exception))
 
     @override_settings(LATEX_INTERPRETER='pdflatex')
     def test_different_latex_interpreter(self):
