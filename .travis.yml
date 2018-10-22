@@ -3,7 +3,7 @@ python:
   - "3.6"
 sudo: enabled
 before_install:
-  - "sudo apt-get install texlive-latex-base"
+  - "sudo apt-get --assume-yes --no-install-recommends install texlive-latex-base"
 # command to install dependencies
 install:
   - pip install -r requirements.txt
