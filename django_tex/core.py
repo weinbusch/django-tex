@@ -18,7 +18,9 @@ def run_tex(source):
         process = Popen(latex_command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
         process.communicate(source.encode('utf-8'))
         if process.returncode == 1:
-            raise TexError(source)
+            with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
+                log = f.read()
+            raise TexError(log)
         filepath = os.path.join(tempdir, 'texput.pdf')
         with open(filepath, 'rb') as pdf_file:
             pdf = pdf_file.read()
