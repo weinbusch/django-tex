@@ -25,9 +25,9 @@ TEMPLATES = [
         'NAME': 'tex',
         'BACKEND': 'django_tex.engine.TeXEngine', 
         'APP_DIRS': True,
-        'OPTIONS': {
-            'environment': 'django_tex.environment.environment',
-        }
+        'DIRS': [
+            os.path.join(BASE_DIR, 'custom_templates'),
+        ],
     },
 ]
 

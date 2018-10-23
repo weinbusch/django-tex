@@ -6,11 +6,10 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
+from django.template import engines
 
 from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
 from django_tex.exceptions import TexError
-
-from django_tex.engine import engine
 
 from django_tex.views import render_to_pdf
 
@@ -155,6 +154,7 @@ class TemplateLanguage(TestCase):
     '''
 
     def render_template(self, template_string, context):
+        engine = engines['tex']
         template = engine.from_string(template_string)
         return template.render(context)
 
