@@ -1,4 +1,5 @@
 
+from django.conf import settings
 from django.template.backends.jinja2 import Jinja2
 
 class TeXEngine(Jinja2):
