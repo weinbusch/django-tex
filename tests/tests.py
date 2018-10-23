@@ -147,7 +147,7 @@ class Engine(TestCase):
         context = {'foo': 'äüßéô'}
         template_string="{{ foo }}"
         output = self.render_template(template_string, context)
-        self.assertEqual(output, 'äüßê')
+        self.assertEqual(output, 'äüßéô')
 
     def test_linebreaks(self):
         context = {
