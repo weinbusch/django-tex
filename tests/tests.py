@@ -8,7 +8,7 @@ from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 
 from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
-from django_tex.core import TexError
+from django_tex.exceptions import TexError
 
 from django_tex.engine import engine
 
@@ -59,7 +59,7 @@ class Exceptions(TestCase):
     Tests custom exceptions
     '''
     
-    def test_tex_error(self):
+    def test_exception_emergency_stop(self):
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
@@ -68,7 +68,38 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             pdf = run_tex(source)
 
-        self.assertIn('LuaTeX', str(cm.exception))
+        self.assertEquals(source, cm.exception.source)
+        self.assertRegex(cm.exception.log, r'^This is LuaTeX')
+        self.assertRegex(cm.exception.message, r'^! Emergency stop')
+        self.assertRegex(cm.exception.message, r'End of file on the terminal\!$')
+
+    @override_settings(LATEX_INTERPRETER='pdflatex')
+    def test_pdflatex_exceptions(self):
+        source = "\
+        \\documentclass{article}\n\
+        \\begin{document}\n\
+        This is a test!\n"
+
+        with self.assertRaises(TexError) as cm:
+            pdf = run_tex(source)
+
+        self.assertRegex(cm.exception.log, r'^This is pdfTeX')
+        self.assertRegex(cm.exception.message, r'^! Emergency stop')
+        self.assertRegex(cm.exception.message, r'End of file on the terminal\!$')
+
+    def test_exception_unknown_command(self):
+        source = "\
+        \\documentclass{article}\n\
+        \\begin{document}\n\
+        \\unkown{command}\n\
+        \\end{document}\n"
+
+        with self.assertRaises(TexError) as cm:
+            pdf = run_tex(source)
+
+        self.assertEquals(source, cm.exception.source)
+        self.assertRegex(cm.exception.log, r'^This is LuaTeX')
+        self.assertRegex(cm.exception.message, r'^! Undefined control sequence')
 
 class RenderingTemplates(TestCase):
     '''
