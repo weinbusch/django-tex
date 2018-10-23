@@ -121,6 +121,12 @@ class RenderingTemplates(TestCase):
         self.assertIn('And this is a date: 25.10.2017.', output)
         self.assertIn('\\item Arjen', output)
 
+    def test_render_template_from_custom_directory(self):
+        template_name = 'custom_directory_test.tex'
+        context = {'foo': 'bar'}
+        output = render_template_with_context(template_name, context)
+        self.assertIn('bar', output)
+
 class ComplingTemplates(TestCase):
     '''
     Tests compiling a template file with a context to a pdf file
