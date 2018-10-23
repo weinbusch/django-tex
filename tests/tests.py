@@ -17,6 +17,9 @@ from django_tex.views import render_to_pdf
 from tests.models import TemplateFile
 
 class RunningTex(TestCase):
+    '''
+    Tests calling latex compiler
+    '''
 
     def test_run_tex(self):
         source = "\
@@ -27,17 +30,6 @@ class RunningTex(TestCase):
 
         pdf = run_tex(source)
         self.assertIsNotNone(pdf)
-
-    def test_tex_error(self):
-        source = "\
-        \\documentclass{article}\n\
-        \\begin{document}\n\
-        This is a test!\n"
-
-        with self.assertRaises(TexError) as cm:
-            pdf = run_tex(source)
-
-        self.assertIn('LuaTeX', str(cm.exception))
 
     @override_settings(LATEX_INTERPRETER='pdflatex')
     def test_different_latex_interpreter(self):
@@ -62,7 +54,47 @@ class RunningTex(TestCase):
         with self.assertRaises(Exception):
             pdf = run_tex(source) # should raise
 
+class Exceptions(TestCase):
+    '''
+    Tests custom exceptions
+    '''
+    
+    def test_tex_error(self):
+        source = "\
+        \\documentclass{article}\n\
+        \\begin{document}\n\
+        This is a test!\n"
+
+        with self.assertRaises(TexError) as cm:
+            pdf = run_tex(source)
+
+        self.assertIn('LuaTeX', str(cm.exception))
+
+class RenderingTemplates(TestCase):
+    '''
+    Tests rendering a template file with context to a string
+
+    TODO: Add a test for custom template file locations.
+    '''
+
+    def test_render_template(self):
+        template_name = 'tests/test.tex'
+        context = {
+            'test': 'a simple test', 
+            'number': Decimal('1000.10'), 
+            'date': datetime.date(2017, 10, 25),
+            'names': ['Arjen', 'Robert', 'Mats'], 
+        }
+        output = render_template_with_context(template_name, context)
+        self.assertIn('\\section{a simple test}', output)
+        self.assertIn('This is a number: 1000,10.', output)
+        self.assertIn('And this is a date: 25.10.2017.', output)
+        self.assertIn('\\item Arjen', output)
+
 class ComplingTemplates(TestCase):
+    '''
+    Tests compiling a template file with a context to a pdf file
+    '''
 
     def test_compile_template_to_pdf(self):
         template_name = 'tests/test.tex'
@@ -81,28 +113,15 @@ class ComplingTemplates(TestCase):
             'test': 'a simple test', 
             'number': Decimal('1000.10'), 
             'date': datetime.date(2017, 10, 25),
-            'names': ['Jérôme'], 
+            'names': ['äüößéèô'], 
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
 
-class RenderingTemplates(TestCase):
-
-    def test_render_template(self):
-        template_name = 'tests/test.tex'
-        context = {
-            'test': 'a simple test', 
-            'number': Decimal('1000.10'), 
-            'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Robert', 'Mats'], 
-        }
-        output = render_template_with_context(template_name, context)
-        self.assertIn('\\section{a simple test}', output)
-        self.assertIn('This is a number: 1000,10.', output)
-        self.assertIn('And this is a date: 25.10.2017.', output)
-        self.assertIn('\\item Arjen', output)
-
-class Engine(TestCase):
+class TemplateLanguage(TestCase):
+    '''
+    Tests features such as whitespace control and filters
+    '''
 
     def render_template(self, template_string, context):
         template = engine.from_string(template_string)
