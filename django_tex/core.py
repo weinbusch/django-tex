@@ -4,12 +4,10 @@ from subprocess import Popen, PIPE
 import tempfile
 
 from django_tex.engine import engine
+from django_tex.exceptions import TexError
 from django.conf import settings
 
 DEFAULT_INTERPRETER = 'lualatex'
-
-class TexError(Exception):
-    pass
 
 def run_tex(source):
     with tempfile.TemporaryDirectory() as tempdir:

@@ -1,0 +1,3 @@
+
+class TexError(Exception):
+    pass
