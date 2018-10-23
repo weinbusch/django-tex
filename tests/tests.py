@@ -6,11 +6,10 @@ from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
+from django.template import engines
 
 from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
 from django_tex.exceptions import TexError
-
-from django_tex.engine import engine
 
 from django_tex.views import render_to_pdf
 
@@ -122,6 +121,12 @@ class RenderingTemplates(TestCase):
         self.assertIn('And this is a date: 25.10.2017.', output)
         self.assertIn('\\item Arjen', output)
 
+    def test_render_template_from_custom_directory(self):
+        template_name = 'custom_directory_test.tex'
+        context = {'foo': 'bar'}
+        output = render_template_with_context(template_name, context)
+        self.assertIn('bar', output)
+
 class ComplingTemplates(TestCase):
     '''
     Tests compiling a template file with a context to a pdf file
@@ -155,6 +160,7 @@ class TemplateLanguage(TestCase):
     '''
 
     def render_template(self, template_string, context):
+        engine = engines['tex']
         template = engine.from_string(template_string)
         return template.render(context)
 
