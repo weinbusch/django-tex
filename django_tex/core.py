@@ -18,7 +18,7 @@ def run_tex(source):
         if process.returncode == 1:
             with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
                 log = f.read()
-            raise TexError(log)
+            raise TexError(log=log, source=source)
         filepath = os.path.join(tempdir, 'texput.pdf')
         with open(filepath, 'rb') as pdf_file:
             pdf = pdf_file.read()
