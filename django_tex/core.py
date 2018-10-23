@@ -3,7 +3,8 @@ import os
 from subprocess import Popen, PIPE
 import tempfile
 
-from django_tex.engine import engine
+from django.template.loader import get_template
+
 from django_tex.exceptions import TexError
 from django.conf import settings
 
@@ -29,8 +30,5 @@ def compile_template_to_pdf(template_name, context):
     return run_tex(source)
 
 def render_template_with_context(template_name, context):
-    template = get_template(template_name)
+    template = get_template(template_name, using='tex')
     return template.render(context)
-
-def get_template(template_name):
-    return engine.get_template(template_name)

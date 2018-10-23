@@ -20,6 +20,17 @@ DATABASES = {
     }
 }
 
+TEMPLATES = [
+    {
+        'NAME': 'tex',
+        'BACKEND': 'django_tex.engine.TeXEngine', 
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'django_tex.environment.environment',
+        }
+    },
+]
+
 LANGUAGE_CODE = 'de-de'
 
 TIME_ZONE = 'Europe/Berlin'
