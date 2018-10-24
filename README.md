@@ -74,14 +74,20 @@ To make this work, the requirements (django and jinja2) may need to be installed
 
 ## Some notes on usage
 
+### Latex binary
+
 The default LaTeX interpreter is set to `lualatex`. This can be changed by the setting
 `LATEX_INTERPRETER`, for instance: `LATEX_INTERPRETER = 'pdflatex'`. Of course, the interpreter needs
 to be installed on your system for `django-tex` to work properly.
+
+### Whitespace control
 
 Since django-tex uses jinja, you can use jinja's whitespace control in 
 LaTeX templates. For example, `\section{ {{ foo }} }` would be rendered as 
 `\section{ Bar }` with the above context; `\section{ {{- foo -}} }`, however, 
 gets rendered nicely as `\section{Bar}`.
+
+### Built-in filters
 
 Django's built-in filters are available. So you can use `{{ foo|date('d. F Y') }}` 
 to get `1. Januar 2018`, for instance.
@@ -92,3 +98,51 @@ create a localized representation. The output depends on the `USE_L10N` and `LAN
 settings. Use the filter like this: `{{ foo|localize }}`.
 
 If you want to convert linebreaks into LaTeX linebreaks (`\\`), use the `linebreaks` filter (`{{ foo | linebreaks }}`).
+
+### Custom filters
+
+Custom filters can be defined as explained in  the jinja documentation [here](http://jinja.pocoo.org/docs/2.10/api/#custom-filters). For example, the following filter formats a
+`datetime.timedelta` object as a hh:mm string:
+
+```python
+def hhmm_format(value):
+    total_seconds = value.total_seconds()
+    hours, remainder = divmod(total_seconds, 3600)
+    minutes, seconds = divmod(remainder, 60)
+    return '{:n}:{:02n}'.format(hours, minutes)
+```
+
+The filter has to be added to a custom environment and the `django-tex` templating engine has to be made aware
+of the environment. This can be achieved, for example, by defining a custom environment callable in an `environment.py` module in your app:
+
+```python
+# environment.py
+from django_tex.environment import environment
+
+def hhmm_format(value):
+    pass # as above
+
+def my_environment(**options):
+    env = environment(**options)
+    env.filters.update({
+        'hhmm_format': hhmm_format
+    })
+    return env
+```
+
+... and passing the dotted path to `my_environment` to the `TEMPLATES` settings:
+
+```python
+# settings.py
+
+TEMPLATES = [
+    {
+        'NAME': 'tex',
+        'BACKEND': 'django_tex.engine.TeXEngine', 
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'environment': 'myapp.environment.my_environment',
+        }
+    },
+]
+```
