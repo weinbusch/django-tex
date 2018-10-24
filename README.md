@@ -19,46 +19,58 @@ To make this work, the requirements (django and jinja2) may need to be installed
 
 1. Add "django_tex" to your `INSTALLED_APPS` setting:
 
-```python
-INSTALLED_APPS = [
-    ...
-    'django_tex',
-]
-```
+    ```python
+    INSTALLED_APPS = [
+        ...
+        'django_tex',
+    ]
+    ```
 
-2. Create a LaTeX template in your template directory:
+2. Configure a template engine named `tex` in settings.py:
 
-```tex
-# test.tex
-\documentclass{article}
+    ```python
+    TEMPLATES = [
+        {
+            'NAME': 'tex',
+            'BACKEND': 'django_tex.engine.TeXEngine', 
+            'APP_DIRS': True,
+        },
+    ]
+    ```
 
-\begin{document}
+3. Create a LaTeX template in your template directory:
 
-\section{ {{- foo -}} }
+    ```tex
+    # test.tex
+    \documentclass{article}
 
-\end{document}
-```
+    \begin{document}
 
-3. Use "compile_template_to_pdf" in your code to get the PDF file as a bytes object:
+    \section{ {{- foo -}} }
 
-```python
-from django_tex.core import compile_template_to_pdf
+    \end{document}
+    ```
 
-template_name = 'test.tex'
-context = {'foo': 'Bar'}
-PDF = compile_template_to_pdf(template_name, context)
-```
+4. Use "compile_template_to_pdf" in your code to get the PDF file as a bytes object:
 
-Or use `render_to_pdf` to generate a HTTPResponse containing the PDF file:
+    ```python
+    from django_tex.core import compile_template_to_pdf
 
-```python
-from django_tex.views import render_to_pdf
-
-def view(request):
     template_name = 'test.tex'
     context = {'foo': 'Bar'}
-    return render_to_pdf(request, template_name, context, filename='test.pdf')
-```
+    PDF = compile_template_to_pdf(template_name, context)
+    ```
+
+    Or use `render_to_pdf` to generate a HTTPResponse containing the PDF file:
+
+    ```python
+    from django_tex.views import render_to_pdf
+
+    def view(request):
+        template_name = 'test.tex'
+        context = {'foo': 'Bar'}
+        return render_to_pdf(request, template_name, context, filename='test.pdf')
+    ```
 
 ## Some notes on usage
 
