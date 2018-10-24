@@ -1,13 +1,19 @@
 language: python
 python:
-  - "3.6"
+- '3.6'
 addons:
   apt:
     packages:
     - texlive-latex-base
-# command to install dependencies
 install:
-  - pip install -r requirements.txt
-# command to run tests
+- pip install -r requirements.txt
 script:
-  - python manage.py test
+- python manage.py test
+deploy:
+  provider: pypi
+  user: weinbusch
+  password:
+    secure: X6xvhbOM0+nm5dkkiFgP/E4eeza5c5qJkwHr67JxB2It2a3QPuWWKt8t2fh/NUVxY4YKdmohFUrlZqLuk0aE027EqGVY4UThyqpSWyT05SWfxuXB5zIVvAK5BDMr4xelxigGgH67NHaMgiMBHyN3eecAYZXtBxjdhfll6O7ymiKW+io4pDHYrDwNy4POZH4BcgBOvC34KWajLlXP3kpDS3os9PJi0bbCszybZOVWQUADb8OUR7AvOFbS1Z11gf7/HH4VV9gsBiRkCMGpvYOaLwku2nHb2pXD+vBKvT0laMWj58APdGuBxGSADvEVgr1FXVY9ja0NHEtz4iX3TUEgBahMzzUvciIY2YA7PQ2qGpeH4FFfPolID9nS3tmOovePOiLzPiTLnOnQGlthQbm1YZ+BAaYc/4PeZJhvexbB6e+Kv6BgW+ulwC8reC8UH544bmKu0yBXb5Vu4nPvQ0BBCwFZI7/HZsGZz/hgAmLG5pCnFn8hM5P5KQQkC2QNDq19A+P6fIS6xYT6gbCHie3jD6MVfiIiTrfuINTgIIxbrD/0iMxQYr94YA6r/mwd4jLkjz3KC63Tv7TkNEXzs9WvZUFcpS9E050jWjhg8y+GqXKsQwu453vxdUnABxWxwXOOHPtXqOtyxVrplWIBsKDhDpCQxo3vZL4SYOdrMTcUCRA=
+  on:
+    tags: true
+  server: https://test.pypi.org/legacy/
