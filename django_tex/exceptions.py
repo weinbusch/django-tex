@@ -7,7 +7,7 @@ def prettify_message(message):
     '''
     # Replace consecutive whitespaces with a single whitespace
     message = re.sub(r'[ ]{2,}', ' ', message)
-    # Replace consecutive newline characters, optionally separated by whitespace, whith a single newline
+    # Replace consecutive newline characters, optionally separated by whitespace, with a single newline
     message = re.sub(r'([\r\n][ \t]*)+', '\n', message)
     return message
 
