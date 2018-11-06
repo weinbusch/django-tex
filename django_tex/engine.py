@@ -5,10 +5,7 @@ class TeXEngine(Jinja2):
     app_dirname = 'templates'
 
     def __init__(self, params):
-        params = params.copy()
-        default_environment = {'environment': 'django_tex.environment.environment'}
-        if 'OPTIONS' in params:
-            params['OPTIONS'].update(default_environment)
-        else:
-            params['OPTIONS'] = default_environment
+        default_environment = 'django_tex.environment.environment'
+        if 'environment' not in params['OPTIONS'] or not params['OPTIONS']['environment']:
+            params['OPTIONS']['environment'] = default_environment
         super().__init__(params)

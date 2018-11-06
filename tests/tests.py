@@ -219,6 +219,23 @@ class TemplateLanguage(TestCase):
             'Der Fahrer wechselt das Rad.'
         )
 
+    @override_settings(TEMPLATES=[
+        {
+            'NAME': 'tex',
+            'BACKEND': 'django_tex.engine.TeXEngine',
+            'OPTIONS': {
+                'environment': 'tests.environment.test_environment',
+            }
+        }
+    ])
+    def test_custom_filters(self):
+        context = {
+            'duration': datetime.timedelta(minutes=90),
+        }
+        template_string = '{{ duration | hhmm_format }}'
+        output = self.render_template(template_string, context)
+        self.assertEqual('1:30', output)
+
 class Models(TestCase):
     '''
     TeXTemplateFile contains the relative path to a tex template (e.g. django_tex/test.tex)
