@@ -5,6 +5,7 @@ addons:
   apt:
     packages:
     - texlive-latex-base
+    - latexmk
 install:
 - pip install -r requirements.txt
 script:
