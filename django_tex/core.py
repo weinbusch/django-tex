@@ -16,10 +16,8 @@ def run_tex(source):
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(source)
         latex_interpreter = getattr(settings, 'LATEX_INTERPRETER', DEFAULT_INTERPRETER)
-        latex_command = [f'cd {tempdir}', '&&', latex_interpreter]
-        latex_command += [f'-output-directory={tempdir}', '-interaction=batchmode', 'texput.tex']
         latex_command = f'{latex_interpreter} -output-directory={tempdir} -interaction=batchmode {filename}'
-        process = run(latex_command, stdout=PIPE, stderr=PIPE)
+        process = run(latex_command, stdout=PIPE, stderr=PIPE, shell=True)
         if process.returncode == 1:
             with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
                 log = f.read()
