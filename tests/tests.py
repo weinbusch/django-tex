@@ -286,3 +286,23 @@ class Views(TestCase):
         self.assertIsInstance(response, HttpResponse)
         self.assertEquals(response['Content-Type'], 'application/pdf')
         self.assertEquals(response['Content-Disposition'], 'filename="test.pdf"')
+
+class LatexmkTest(TestCase):
+
+    def test_latexmk(self):
+        import os, subprocess, tempfile
+        with tempfile.TemporaryDirectory() as tempdir:
+            source = (
+                r'\documentclass{article}'
+                r'\begin{document}'
+                r'Test'
+                r'\end{document}'
+            )
+            filename = os.path.join(tempdir, 'test.tex')
+            with open(filename, 'x') as f:
+                f.write(source)
+            command = f'latexmk -pdf -output-directory={tempdir} {filename}'
+            process = subprocess.run(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+            self.assertEqual(process.returncode, 2)
+            self.assertIn(f"Filename '{filename}' contains character not allowed for TeX file", process.stderr.decode('utf-8'))
+            self.assertIn('Stopping because of bad filename(s)', process.stderr.decode('utf-8'))
