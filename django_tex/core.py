@@ -1,6 +1,6 @@
 
 import os
-from subprocess import Popen, PIPE
+from subprocess import PIPE, run
 import tempfile
 
 from django.template.loader import get_template
@@ -12,10 +12,13 @@ DEFAULT_INTERPRETER = 'lualatex'
 
 def run_tex(source):
     with tempfile.TemporaryDirectory() as tempdir:
+        filename = os.path.join(tempdir, 'texput.tex')
+        with open(filename, 'x', encoding='utf-8') as f:
+            f.write(source)
         latex_interpreter = getattr(settings, 'LATEX_INTERPRETER', DEFAULT_INTERPRETER)
-        latex_command = [latex_interpreter, '-output-directory', tempdir]
-        process = Popen(latex_command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        process.communicate(source.encode('utf-8'))
+        latex_command = [f'cd {tempdir}', '&&', latex_interpreter]
+        latex_command += [f'-output-directory={tempdir}', '-interaction=batchmode', 'texput.tex']
+        process = run(' '.join(latex_command), shell=True, stdout=PIPE, stderr=PIPE)
         if process.returncode == 1:
             with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
                 log = f.read()
