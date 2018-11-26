@@ -18,11 +18,14 @@ def run_tex(source):
         latex_interpreter = getattr(settings, 'LATEX_INTERPRETER', DEFAULT_INTERPRETER)
         latex_command = [f'cd {tempdir}', '&&', latex_interpreter]
         latex_command += [f'-output-directory={tempdir}', '-interaction=batchmode', 'texput.tex']
-        process = run(' '.join(latex_command), shell=True, stdout=PIPE, stderr=PIPE)
+        latex_command = f'{latex_interpreter} -output-directory={tempdir} -interaction=batchmode {filename}'
+        process = run(latex_command, stdout=PIPE, stderr=PIPE)
         if process.returncode == 1:
             with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
                 log = f.read()
             raise TexError(log=log, source=source)
+        if process.stderr:
+            raise Exception(process.stderr.decode('utf-8'))
         filepath = os.path.join(tempdir, 'texput.pdf')
         with open(filepath, 'rb') as pdf_file:
             pdf = pdf_file.read()
