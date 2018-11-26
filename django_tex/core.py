@@ -22,11 +22,14 @@ def run_tex(source):
             with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
                 log = f.read()
             raise TexError(log=log, source=source)
-        if process.stderr:
-            raise Exception(process.stderr.decode('utf-8'))
         filepath = os.path.join(tempdir, 'texput.pdf')
-        with open(filepath, 'rb') as pdf_file:
-            pdf = pdf_file.read()
+        try:
+            with open(filepath, 'rb') as pdf_file:
+                pdf = pdf_file.read()
+        except FileNotFoundError:
+            if process.stderr:
+                raise Exception(process.stderr.decode('utf-8'))
+            raise
     return pdf
 
 def compile_template_to_pdf(template_name, context):
