@@ -42,6 +42,17 @@ class RunningTex(TestCase):
         pdf = run_tex(source)
         self.assertIsNotNone(pdf)
 
+    @override_settings(LATEX_INTERPRETER='latexmk -pdf')
+    def test_latexmk_test(self):
+        source = "\
+        \\documentclass{article}\n\
+        \\begin{document}\n\
+        This is a test!\n\
+        \\end{document}"
+
+        pdf = run_tex(source)
+        self.assertIsNotNone(pdf)
+
     @override_settings(LATEX_INTERPRETER='does_not_exist')
     def test_wrong_latex_interpreter(self):
         source = "\
@@ -70,7 +81,12 @@ class Exceptions(TestCase):
         self.assertEquals(source, cm.exception.source)
         self.assertRegex(cm.exception.log, r'^This is LuaTeX')
         self.assertRegex(cm.exception.message, r'^! Emergency stop')
-        self.assertRegex(cm.exception.message, r'End of file on the terminal\!$')
+        self.assertRegex(cm.exception.message, 
+            r'(End of file on the terminal\!$)|(job aborted, no legal \\end found)') # First alternative applies
+                                                                                     # if tex source is given to 
+                                                                                     # pdflatex via stdin.
+                                                                                     # Second, if tex source is
+                                                                                     # given as filename 
 
     @override_settings(LATEX_INTERPRETER='pdflatex')
     def test_pdflatex_exceptions(self):
@@ -84,7 +100,12 @@ class Exceptions(TestCase):
 
         self.assertRegex(cm.exception.log, r'^This is pdfTeX')
         self.assertRegex(cm.exception.message, r'^! Emergency stop')
-        self.assertRegex(cm.exception.message, r'End of file on the terminal\!$')
+        self.assertRegex(cm.exception.message, 
+            r'(End of file on the terminal\!$)|(job aborted, no legal \\end found)') # First alternative applies
+                                                                                     # if tex source is given to 
+                                                                                     # pdflatex via stdin.
+                                                                                     # Second, if tex source is
+                                                                                     # given as filename 
 
     def test_exception_unknown_command(self):
         source = "\

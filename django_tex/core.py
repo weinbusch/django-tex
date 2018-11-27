@@ -1,6 +1,6 @@
 
 import os
-from subprocess import Popen, PIPE
+from subprocess import PIPE, run
 import tempfile
 
 from django.template.loader import get_template
@@ -12,17 +12,23 @@ DEFAULT_INTERPRETER = 'lualatex'
 
 def run_tex(source):
     with tempfile.TemporaryDirectory() as tempdir:
+        filename = os.path.join(tempdir, 'texput.tex')
+        with open(filename, 'x', encoding='utf-8') as f:
+            f.write(source)
         latex_interpreter = getattr(settings, 'LATEX_INTERPRETER', DEFAULT_INTERPRETER)
-        latex_command = [latex_interpreter, '-output-directory', tempdir]
-        process = Popen(latex_command, stdin=PIPE, stdout=PIPE, stderr=PIPE)
-        process.communicate(source.encode('utf-8'))
-        if process.returncode == 1:
-            with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
-                log = f.read()
-            raise TexError(log=log, source=source)
-        filepath = os.path.join(tempdir, 'texput.pdf')
-        with open(filepath, 'rb') as pdf_file:
-            pdf = pdf_file.read()
+        latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {os.path.basename(filename)}'
+        process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
+        try:
+            if process.returncode == 1:
+                with open(os.path.join(tempdir, 'texput.log'), encoding='utf8') as f:
+                    log = f.read()
+                raise TexError(log=log, source=source)
+            with open(os.path.join(tempdir, 'texput.pdf'), 'rb') as pdf_file:
+                pdf = pdf_file.read()
+        except FileNotFoundError:
+            if process.stderr:
+                raise Exception(process.stderr.decode('utf-8'))
+            raise
     return pdf
 
 def compile_template_to_pdf(template_name, context):
