@@ -9,11 +9,9 @@ templating engine for template rendering.
 
 ## Installation
 
-`django-tex` is currently available on test.pypi.org. It can be installed by:
+`django-tex` is available on [pypi.org](https://pypi.org/project/django-tex/). It can be installed by:
 
-```pip install --index-url https://test.pypi.org/simple/ django_tex```
-
-To make this work, the requirements (django and jinja2) may need to be installed separately via `pip install django` and `pip install jinja2`, respectively.
+```pip install django_tex```
 
 ## Quick start
 
