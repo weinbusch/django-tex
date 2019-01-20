@@ -18,8 +18,8 @@ setup(
         'setuptools_scm',
         ],
     install_requires=[
-        'django~=1.11.4',
-        'jinja2~=2.9.6',
+        'django>=1.11',
+        'jinja2>=2.9',
     ],
     python_requires='>=3.6.2',
     package_data={
