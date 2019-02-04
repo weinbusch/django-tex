@@ -180,8 +180,8 @@ class TemplateLanguage(TestCase):
     Tests features such as whitespace control and filters
     '''
 
-    def render_template(self, template_string, context):
-        engine = engines['tex']
+    def render_template(self, template_string, context, using='tex'):
+        engine = engines[using]
         template = engine.from_string(template_string)
         return template.render(context)
 
@@ -239,7 +239,13 @@ class TemplateLanguage(TestCase):
             'Ich sitze am Straßenhang.\\\\\n'+
             'Der Fahrer wechselt das Rad.'
         )
-
+        # Render with default django renderer
+        output = self.render_template(template_string, context, using='django')
+        self.assertEqual(
+            output, 
+            '<p>Ich sitze am Straßenhang.<br />'+
+            'Der Fahrer wechselt das Rad.</p>'
+        )
     @override_settings(TEMPLATES=[
         {
             'NAME': 'tex',
