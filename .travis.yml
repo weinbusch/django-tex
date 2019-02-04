@@ -6,8 +6,11 @@ addons:
     packages:
     - texlive-latex-base
     - latexmk
+env:
+  - DJANGO_VERSION~=1.11.4
+  - DJANGO_VERSION>=2.1.5
 install:
-- pip install -r requirements.txt
+  - pip install -q Django==$DJANGO_VERSION
 script:
 - python manage.py test
 deploy:
