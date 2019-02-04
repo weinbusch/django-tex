@@ -10,7 +10,7 @@ env:
   - DJANGO_VERSION=1.11.4
   - DJANGO_VERSION=2.1.5
 install:
-  - pip install -q Django~=$DJANGO_VERSION
+  - pip install Django~=$DJANGO_VERSION
   - pip install -r requirements.txt
 script:
 - python manage.py test
