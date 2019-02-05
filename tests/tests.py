@@ -241,9 +241,9 @@ class TemplateLanguage(TestCase):
         )
         # Render with default django renderer
         output = self.render_template(template_string, context, using='django')
-        self.assertRegex(
+        self.assertHTMLEqual(
             output, 
-            '<p>Ich sitze am Straßenhang.<br( /)?>'+
+            '<p>Ich sitze am Straßenhang.<br>'+
             'Der Fahrer wechselt das Rad.</p>'
         )
     @override_settings(TEMPLATES=[
