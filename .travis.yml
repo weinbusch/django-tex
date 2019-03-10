@@ -1,11 +1,11 @@
 language: python
 python:
-- '3.6'
+  - '3.6'
 addons:
   apt:
     packages:
-    - texlive-latex-base
-    - latexmk
+      - texlive-latex-base
+      - latexmk
 env:
   - DJANGO_VERSION=1.11.4
   - DJANGO_VERSION=2.1.5
@@ -13,7 +13,7 @@ install:
   - pip install Django~=$DJANGO_VERSION
   - pip install -r requirements.txt
 script:
-- python manage.py test
+  - python manage.py test
 deploy:
   provider: pypi
   user: weinbusch

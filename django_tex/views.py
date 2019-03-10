@@ -1,7 +1,7 @@
-
 from django.http import HttpResponse
 
 from django_tex.core import compile_template_to_pdf
+
 
 class PDFResponse(HttpResponse):
 

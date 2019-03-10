@@ -1,4 +1,3 @@
-
 import os
 from subprocess import PIPE, run
 import tempfile
@@ -10,13 +9,15 @@ from django.conf import settings
 
 DEFAULT_INTERPRETER = 'lualatex'
 
+
 def run_tex(source):
     with tempfile.TemporaryDirectory() as tempdir:
         filename = os.path.join(tempdir, 'texput.tex')
         with open(filename, 'x', encoding='utf-8') as f:
             f.write(source)
         latex_interpreter = getattr(settings, 'LATEX_INTERPRETER', DEFAULT_INTERPRETER)
-        latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {os.path.basename(filename)}'
+        latex_interpreter_options = getattr(settings, 'LATEX_INTERPRETER_OPTIONS', '')
+        latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {os.path.basename(filename)} {latex_interpreter_options}'
         process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         try:
             if process.returncode == 1:
@@ -31,9 +32,11 @@ def run_tex(source):
             raise
     return pdf
 
+
 def compile_template_to_pdf(template_name, context):
     source = render_template_with_context(template_name, context)
     return run_tex(source)
+
 
 def render_template_with_context(template_name, context):
     template = get_template(template_name, using='tex')

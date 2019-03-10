@@ -4,3 +4,4 @@ build/
 *.egg-info
 *.sqlite3
 .eggs/
+.idea/

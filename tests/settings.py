@@ -1,4 +1,3 @@
-
 """
 Django settings for running tests
 """
@@ -36,7 +35,7 @@ TEMPLATES = [
     },
     {
         'NAME': 'tex',
-        'BACKEND': 'django_tex.engine.TeXEngine', 
+        'BACKEND': 'django_tex.engine.TeXEngine',
         'APP_DIRS': True,
         'DIRS': [
             os.path.join(BASE_DIR, 'custom_templates'),
