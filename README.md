@@ -1,4 +1,3 @@
-
 # DJANGO-TEX
 
 Django-tex is a simple Django app to render LaTeX templates and compile

@@ -16,7 +16,7 @@ setup(
     use_scm_version=True,
     setup_requires=[
         'setuptools_scm',
-        ],
+    ],
     install_requires=[
         'django>=1.11',
         'jinja2>=2.9',

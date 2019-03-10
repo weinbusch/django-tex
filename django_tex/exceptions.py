@@ -1,5 +1,5 @@
-
 import re
+
 
 def prettify_message(message):
     '''
@@ -10,6 +10,7 @@ def prettify_message(message):
     # Replace consecutive newline characters, optionally separated by whitespace, with a single newline
     message = re.sub(r'([\r\n][ \t]*)+', '\n', message)
     return message
+
 
 def tokenizer(code):
     token_specification = [
@@ -22,8 +23,9 @@ def tokenizer(code):
         token_dict = dict(type=m.lastgroup, message=prettify_message(m.group()))
         yield token_dict
 
+
 class TexError(Exception):
-    
+
     def __init__(self, log, source):
         self.log = log
         self.source = source

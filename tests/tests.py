@@ -1,4 +1,3 @@
-
 import datetime
 from decimal import Decimal
 
@@ -14,6 +13,7 @@ from django_tex.exceptions import TexError
 from django_tex.views import render_to_pdf
 
 from tests.models import TemplateFile
+
 
 class RunningTex(TestCase):
     '''
@@ -62,13 +62,14 @@ class RunningTex(TestCase):
         \\end{document}"
 
         with self.assertRaises(Exception):
-            pdf = run_tex(source) # should raise
+            pdf = run_tex(source)  # should raise
+
 
 class Exceptions(TestCase):
     '''
     Tests custom exceptions
     '''
-    
+
     def test_exception_emergency_stop(self):
         source = "\
         \\documentclass{article}\n\
@@ -81,12 +82,12 @@ class Exceptions(TestCase):
         self.assertEquals(source, cm.exception.source)
         self.assertRegex(cm.exception.log, r'^This is LuaTeX')
         self.assertRegex(cm.exception.message, r'^! Emergency stop')
-        self.assertRegex(cm.exception.message, 
-            r'(End of file on the terminal\!$)|(job aborted, no legal \\end found)') # First alternative applies
-                                                                                     # if tex source is given to 
-                                                                                     # pdflatex via stdin.
-                                                                                     # Second, if tex source is
-                                                                                     # given as filename 
+        self.assertRegex(cm.exception.message,
+                         r'(End of file on the terminal\!$)|(job aborted, no legal \\end found)')  # First alternative applies
+        # if tex source is given to
+        # pdflatex via stdin.
+        # Second, if tex source is
+        # given as filename
 
     @override_settings(LATEX_INTERPRETER='pdflatex')
     def test_pdflatex_exceptions(self):
@@ -100,12 +101,12 @@ class Exceptions(TestCase):
 
         self.assertRegex(cm.exception.log, r'^This is pdfTeX')
         self.assertRegex(cm.exception.message, r'^! Emergency stop')
-        self.assertRegex(cm.exception.message, 
-            r'(End of file on the terminal\!$)|(job aborted, no legal \\end found)') # First alternative applies
-                                                                                     # if tex source is given to 
-                                                                                     # pdflatex via stdin.
-                                                                                     # Second, if tex source is
-                                                                                     # given as filename 
+        self.assertRegex(cm.exception.message,
+                         r'(End of file on the terminal\!$)|(job aborted, no legal \\end found)')  # First alternative applies
+        # if tex source is given to
+        # pdflatex via stdin.
+        # Second, if tex source is
+        # given as filename
 
     def test_exception_unknown_command(self):
         source = "\
@@ -121,6 +122,7 @@ class Exceptions(TestCase):
         self.assertRegex(cm.exception.log, r'^This is LuaTeX')
         self.assertRegex(cm.exception.message, r'^! Undefined control sequence')
 
+
 class RenderingTemplates(TestCase):
     '''
     Tests rendering a template file with context to a string
@@ -131,10 +133,10 @@ class RenderingTemplates(TestCase):
     def test_render_template(self):
         template_name = 'tests/test.tex'
         context = {
-            'test': 'a simple test', 
-            'number': Decimal('1000.10'), 
+            'test': 'a simple test',
+            'number': Decimal('1000.10'),
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Robert', 'Mats'], 
+            'names': ['Arjen', 'Robert', 'Mats'],
         }
         output = render_template_with_context(template_name, context)
         self.assertIn('\\section{a simple test}', output)
@@ -148,6 +150,7 @@ class RenderingTemplates(TestCase):
         output = render_template_with_context(template_name, context)
         self.assertIn('bar', output)
 
+
 class ComplingTemplates(TestCase):
     '''
     Tests compiling a template file with a context to a pdf file
@@ -156,10 +159,10 @@ class ComplingTemplates(TestCase):
     def test_compile_template_to_pdf(self):
         template_name = 'tests/test.tex'
         context = {
-            'test': 'a simple test', 
-            'number': Decimal('1000.10'), 
+            'test': 'a simple test',
+            'number': Decimal('1000.10'),
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Robert', 'Mats'], 
+            'names': ['Arjen', 'Robert', 'Mats'],
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
@@ -167,13 +170,14 @@ class ComplingTemplates(TestCase):
     def test_compile_template_with_unicode(self):
         template_name = 'tests/test.tex'
         context = {
-            'test': 'a simple test', 
-            'number': Decimal('1000.10'), 
+            'test': 'a simple test',
+            'number': Decimal('1000.10'),
             'date': datetime.date(2017, 10, 25),
-            'names': ['äüößéèô'], 
+            'names': ['äüößéèô'],
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
+
 
 class TemplateLanguage(TestCase):
     '''
@@ -187,56 +191,56 @@ class TemplateLanguage(TestCase):
 
     def test_whitespace_control(self):
         context = {'foo': 'bar'}
-        template_string="\\section{ {{- foo -}} }"
+        template_string = "\\section{ {{- foo -}} }"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '\\section{bar}')
 
     @override_settings(LANGUAGE_CODE='en')
     def test_override_l10n_setting(self):
         context = {'foo': Decimal('1000.10')}
-        template_string="{{ foo|localize }}"
+        template_string = "{{ foo|localize }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '1000.10')
 
     @override_settings(LANGUAGE_CODE='de-de')
     def test_localize_decimal(self):
         context = {'foo': Decimal('1000.10')}
-        template_string="{{ foo|localize }}"
+        template_string = "{{ foo|localize }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '1000,10')
-    
+
     @override_settings(LANGUAGE_CODE='de-de')
     def test_localize_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
-        template_string="{{ foo|localize }}"
+        template_string = "{{ foo|localize }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25.10.2017')
 
     @override_settings(LANGUAGE_CODE='de-de')
     def test_format_long_date(self):
         context = {'foo': datetime.date(2017, 10, 25)}
-        template_string="{{ foo | date('d. F Y') }}"
+        template_string = "{{ foo | date('d. F Y') }}"
         # template_string="{{ '{:%d. %B %Y}'.format(foo) }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, '25. Oktober 2017')
 
     def test_rendering_unicode(self):
         context = {'foo': 'äüßéô'}
-        template_string="{{ foo }}"
+        template_string = "{{ foo }}"
         output = self.render_template(template_string, context)
         self.assertEqual(output, 'äüßéô')
 
     def test_linebreaks(self):
         context = {
-            'brecht': 
-            'Ich sitze am Straßenhang.\n' +
-            'Der Fahrer wechselt das Rad.'
+            'brecht':
+                'Ich sitze am Straßenhang.\n' +
+                'Der Fahrer wechselt das Rad.'
         }
-        template_string="{{ brecht | linebreaks }}"
+        template_string = "{{ brecht | linebreaks }}"
         output = self.render_template(template_string, context)
         self.assertEqual(
-            output, 
-            'Ich sitze am Straßenhang.\\\\\n'+
+            output,
+            'Ich sitze am Straßenhang.\\\\\n' +
             'Der Fahrer wechselt das Rad.'
         )
         # Render with default django renderer
@@ -246,6 +250,7 @@ class TemplateLanguage(TestCase):
             '<p>Ich sitze am Straßenhang.<br>'+
             'Der Fahrer wechselt das Rad.</p>'
         )
+
     @override_settings(TEMPLATES=[
         {
             'NAME': 'tex',
@@ -263,6 +268,7 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual('1:30', output)
 
+
 class Models(TestCase):
     '''
     TeXTemplateFile contains the relative path to a tex template (e.g. django_tex/test.tex)
@@ -277,16 +283,17 @@ class Models(TestCase):
         with self.assertRaises(ValidationError):
             TemplateFile(title='invalid', name='template/doesnt.exist').full_clean()
 
+
 class Views(TestCase):
 
     def test_render_to_pdf(self):
-        request = None # request is only needed to make the signature of render_to_pdf similar to the signature of django's render function
+        request = None  # request is only needed to make the signature of render_to_pdf similar to the signature of django's render function
         template_name = 'tests/test.tex'
         context = {
-            'test': 'a simple test', 
-            'number': Decimal('1000.10'), 
+            'test': 'a simple test',
+            'number': Decimal('1000.10'),
             'date': datetime.date(2017, 10, 25),
-            'names': ['Arjen', 'Robert', 'Mats'], 
+            'names': ['Arjen', 'Robert', 'Mats'],
         }
         response = render_to_pdf(request, template_name, context, filename='test.pdf')
         self.assertIsInstance(response, HttpResponse)
