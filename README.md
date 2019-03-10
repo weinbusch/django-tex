@@ -1,6 +1,6 @@
-# DJANGO-TEX
+# django-tex
 
-Django-tex is a simple Django app to render LaTeX templates and compile
+django-tex is a simple Django app to render LaTeX templates and compile
 them into PDF files.
 
 Django-tex requires a local LaTeX installation and uses the jinja2 
@@ -16,58 +16,58 @@ templating engine for template rendering.
 
 1. Add "django_tex" to your `INSTALLED_APPS` setting:
 
-    ```python
-    INSTALLED_APPS = [
-        ...
-        'django_tex',
-    ]
-    ```
+```python
+INSTALLED_APPS = [
+    ...
+    'django_tex',
+]
+```
 
 2. Configure a template engine named `tex` in settings.py:
 
-    ```python
-    TEMPLATES = [
-        {
-            'NAME': 'tex',
-            'BACKEND': 'django_tex.engine.TeXEngine', 
-            'APP_DIRS': True,
-        },
-    ]
-    ```
+```python
+TEMPLATES = [
+    {
+        'NAME': 'tex',
+        'BACKEND': 'django_tex.engine.TeXEngine', 
+        'APP_DIRS': True,
+    },
+]
+```
 
 3. Create a LaTeX template in your template directory:
 
-    ```tex
-    # test.tex
-    \documentclass{article}
+```tex
+# test.tex
+\documentclass{article}
 
-    \begin{document}
+\begin{document}
 
-    \section{ {{- foo -}} }
+\section{ {{- foo -}} }
 
-    \end{document}
-    ```
+\end{document}
+```
 
 4. Use "compile_template_to_pdf" in your code to get the PDF file as a bytes object:
 
-    ```python
-    from django_tex.core import compile_template_to_pdf
+```python
+from django_tex.core import compile_template_to_pdf
 
+template_name = 'test.tex'
+context = {'foo': 'Bar'}
+PDF = compile_template_to_pdf(template_name, context)
+```
+
+Or use `render_to_pdf` to generate a HTTPResponse containing the PDF file:
+
+```python
+from django_tex.views import render_to_pdf
+
+def view(request):
     template_name = 'test.tex'
     context = {'foo': 'Bar'}
-    PDF = compile_template_to_pdf(template_name, context)
-    ```
-
-    Or use `render_to_pdf` to generate a HTTPResponse containing the PDF file:
-
-    ```python
-    from django_tex.views import render_to_pdf
-
-    def view(request):
-        template_name = 'test.tex'
-        context = {'foo': 'Bar'}
-        return render_to_pdf(request, template_name, context, filename='test.pdf')
-    ```
+    return render_to_pdf(request, template_name, context, filename='test.pdf')
+```
 
 ## Some notes on usage
 
@@ -76,6 +76,10 @@ templating engine for template rendering.
 The default LaTeX interpreter is set to `lualatex`. This can be changed by the setting
 `LATEX_INTERPRETER`, for instance: `LATEX_INTERPRETER = 'pdflatex'`. Of course, the interpreter needs
 to be installed on your system for `django-tex` to work properly.
+
+### Interpreter arguments
+
+You can pass additional arguments to the latex interpreter by using the `LATEX_INTERPRETER_OPTIONS` setting.
 
 ### Whitespace control
 
