@@ -17,7 +17,7 @@ def run_tex(source):
             f.write(source)
         latex_interpreter = getattr(settings, 'LATEX_INTERPRETER', DEFAULT_INTERPRETER)
         latex_interpreter_options = getattr(settings, 'LATEX_INTERPRETER_OPTIONS', '')
-        latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {os.path.basename(filename)} {latex_interpreter_options}'
+        latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {latex_interpreter_options} {os.path.basename(filename)}'
         process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
         try:
             if process.returncode == 1:
