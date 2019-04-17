@@ -61,7 +61,7 @@ PDF = compile_template_to_pdf(template_name, context)
 Or use `render_to_pdf` to generate a HTTPResponse containing the PDF file:
 
 ```python
-from django_tex.views import render_to_pdf
+from django_tex.shortcuts import render_to_pdf
 
 def view(request):
     template_name = 'test.tex'
