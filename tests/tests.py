@@ -10,7 +10,7 @@ from django.template import engines
 from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
 from django_tex.exceptions import TexError
 
-from django_tex.views import render_to_pdf
+from django_tex.shortcuts import render_to_pdf
 
 from tests.models import TemplateFile
 
