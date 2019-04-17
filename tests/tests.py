@@ -79,7 +79,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             pdf = run_tex(source)
 
-        self.assertEquals(source, cm.exception.source)
+        self.assertEqual(source, cm.exception.source)
         self.assertRegex(cm.exception.log, r'^This is LuaTeX')
         self.assertRegex(cm.exception.message, r'^! Emergency stop')
         self.assertRegex(cm.exception.message,
@@ -118,7 +118,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             pdf = run_tex(source)
 
-        self.assertEquals(source, cm.exception.source)
+        self.assertEqual(source, cm.exception.source)
         self.assertRegex(cm.exception.log, r'^This is LuaTeX')
         self.assertRegex(cm.exception.message, r'^! Undefined control sequence')
 
@@ -297,5 +297,5 @@ class Views(TestCase):
         }
         response = render_to_pdf(request, template_name, context, filename='test.pdf')
         self.assertIsInstance(response, HttpResponse)
-        self.assertEquals(response['Content-Type'], 'application/pdf')
-        self.assertEquals(response['Content-Disposition'], 'filename="test.pdf"')
+        self.assertEqual(response['Content-Type'], 'application/pdf')
+        self.assertEqual(response['Content-Disposition'], 'filename="test.pdf"')
