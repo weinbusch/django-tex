@@ -14,7 +14,7 @@ def prettify_message(message):
 
 def tokenizer(code):
     token_specification = [
-        ('ERROR', r'\! (?:.+[\r\n])+[\r\n]+'),
+        ('ERROR', r'\! (.+[\r\n])+[\r\n]*'),
         ('WARNING', r'latex warning.*'),
         ('NOFILE', r'no file.*')
     ]
