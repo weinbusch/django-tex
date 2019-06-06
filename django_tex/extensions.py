@@ -1,4 +1,3 @@
-import os.path
 from django.conf import settings
 from jinja2.ext import Extension
 from jinja2 import nodes
