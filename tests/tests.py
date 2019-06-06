@@ -6,6 +6,7 @@ from django.test.utils import override_settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.template import engines
+from django.conf import settings
 
 from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
 from django_tex.exceptions import TexError
@@ -151,7 +152,7 @@ class RenderingTemplates(TestCase):
         self.assertIn('bar', output)
 
 
-class ComplingTemplates(TestCase):
+class CompilingTemplates(TestCase):
     '''
     Tests compiling a template file with a context to a pdf file
     '''
@@ -178,13 +179,21 @@ class ComplingTemplates(TestCase):
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
 
+    @override_settings(LATEX_INTERPRETER='pdflatex') 
+    def test_compile_template_with_graphics(self):
+        # this test fails with lualatex if path to graphics file contains whitespaces
+        template_name = 'tests/test_graphics.tex'
+        context = {}
+        pdf = compile_template_to_pdf(template_name, context)
+        self.assertIsNotNone(pdf)
+
 
 class TemplateLanguage(TestCase):
     '''
     Tests features such as whitespace control and filters
     '''
 
-    def render_template(self, template_string, context, using='tex'):
+    def render_template(self, template_string, context={}, using='tex'):
         engine = engines[using]
         template = engine.from_string(template_string)
         return template.render(context)
@@ -268,6 +277,11 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual('1:30', output)
 
+    @override_settings(LATEX_GRAPHICSPATH=['c:\\foo\\bar', 'c:\\bar\\foo'])
+    def test_graphicspath(self):
+        template_string = '{% graphicspath %}'
+        output = self.render_template(template_string)
+        self.assertEqual(output, '\graphicspath{ {"c:/foo/bar/"} {"c:/bar/foo/"} }')
 
 class Models(TestCase):
     '''
