@@ -147,3 +147,44 @@ TEMPLATES = [
     },
 ]
 ```
+
+### Including graphics files
+
+Graphics can be included in LaTeX documents using the `\includegraphics{<filename>}` command provided
+by the `graphicx` package. Normally, LaTeX looks for graphics files in the current working directory, i.e. the 
+directory including the source `.tex` file. The problem here is that `django-tex` creates a temporary directory to
+store the source file so that the LaTeX compiler does not see any graphics files provided by the Django application.
+This problem can be solved by specifying the absolute path to one or more directories including the graphics files 
+using the `\graphicspath` command.
+
+`Django-tex` allows the user to specify the absolute paths to one or more directories in the `LATEX_GRAPHICSPATH` 
+setting. This setting should contain a list of one or more paths:
+
+```python
+# settings.py
+
+LATEX_GRAPHICSPATH = ['c:\foo\bar', 'c:\bar\foo']
+```
+
+Of course, a good way of constructing those paths is to use `os.path.join(BASE_DIR, <path>)`.
+
+Using the template tag `{% graphicspath %}`, the correct `\graphicspath` command can be inserted into the `.tex` 
+template. In the above case, `{% graphicspath %}` turns into `\graphicspath{ {"c:/foo/bar/"} {"c:/bar/foo/"} }`. Use  
+`{% graphicspath %}` like this:
+
+```
+\documentclass{article}
+\usepackage{graphicx}
+
+{% graphicspath %}
+
+\begin{document}
+
+\includegraphics{foo}
+
+\end{document}
+```
+
+If `LATEX_GRAPHICSPATH` is not specified, `django-tex` takes the `BASE_DIR` instead.
+
+Note: There might be a problem if the path to the graphics directory contains whitespaces. To my knowledge, `lualatex` cannot handle whitespaces in the `\graphicspath` command, but `pdflatex` can.
