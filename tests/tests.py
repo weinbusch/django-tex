@@ -239,6 +239,13 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, 'äüßéô')
 
+    def test_escaping_special_characters(self):
+        template_string = "{{ value | latex_escape }}"
+        context = {'value': '&$%#_{}'}
+        output = self.render_template(template_string, context)
+        expected = '\\&\\$\\%\\#\\_\\{\\}'
+        self.assertEqual(output, expected)
+
     def test_linebreaks(self):
         context = {
             'brecht':
