@@ -99,6 +99,10 @@ create a localized representation. The output depends on the `USE_L10N` and `LAN
 settings. Use the filter like this: `{{ foo|localize }}`.
 
 If you want to convert linebreaks into LaTeX linebreaks (`\\`), use the `linebreaks` filter (`{{ foo | linebreaks }}`).
+### Escaping LaTeX special characters
+
+To escape LaTeX special characters, use the `escape_latex` filter. This escapes the following characters: `&$%#_{}`.
+Please note Jinja's autoescaping is turned off in the default `django-tex` environment.
 
 ### Custom filters
 
