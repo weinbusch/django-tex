@@ -5,3 +5,4 @@ build/
 *.sqlite3
 .eggs/
 .idea/
+env/
