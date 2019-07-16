@@ -6,7 +6,9 @@ def format_path_for_latex(path):
     path = path.replace('\\', '/')
     if not path.endswith('/'):
         path += '/'
-    path = '{"' + path + '"}'
+    if getattr(settings, 'LATEX_INTERPRETER', None) != 'lualatex' and ' ' in path:
+        path = '"' + path + '"'
+    path = '{' + path + '}'
     return path
 
 class GraphicspathExtension(Extension):

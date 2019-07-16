@@ -179,14 +179,12 @@ class CompilingTemplates(TestCase):
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
 
-    @override_settings(LATEX_INTERPRETER='pdflatex') 
-    def test_compile_template_with_graphics(self):
-        # this test fails with lualatex if path to graphics file contains whitespaces
+    @override_settings(LATEX_INTERPRETER='pdflatex')
+    def test_compile_template_with_graphics_pdflatex(self):
         template_name = 'tests/test_graphics.tex'
         context = {}
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
-
 
 class TemplateLanguage(TestCase):
     '''
@@ -284,11 +282,15 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual('1:30', output)
 
-    @override_settings(LATEX_GRAPHICSPATH=['c:\\foo\\bar', 'c:\\bar\\foo'])
+    @override_settings(LATEX_GRAPHICSPATH=['c:\\foo\\bar', 'c:\\bar baz\\foo'])
     def test_graphicspath(self):
         template_string = '{% graphicspath %}'
-        output = self.render_template(template_string)
-        self.assertEqual(output, '\graphicspath{ {"c:/foo/bar/"} {"c:/bar/foo/"} }')
+        with override_settings(LATEX_INTERPRETER='pdflatex'):
+            output = self.render_template(template_string)
+            self.assertEqual(output, '\graphicspath{ {c:/foo/bar/} {"c:/bar baz/foo/"} }')
+        with override_settings(LATEX_INTERPRETER='lualatex'):
+            output = self.render_template(template_string)
+            self.assertEqual(output, '\graphicspath{ {c:/foo/bar/} {c:/bar baz/foo/} }')
 
 class Models(TestCase):
     '''
