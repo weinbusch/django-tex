@@ -40,3 +40,7 @@ class TexError(Exception):
 
     def __str__(self):
         return self.message
+
+
+class PrintError(Exception):
+    pass
