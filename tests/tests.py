@@ -1,19 +1,19 @@
 import datetime
+import sys
 from decimal import Decimal
-
 from django.test import TestCase
 from django.test.utils import override_settings
 from django.core.exceptions import ValidationError
 from django.http import HttpResponse
 from django.template import engines
 from django.conf import settings
-
-from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context
+from django_tex.core import run_tex, compile_template_to_pdf, render_template_with_context, TexBuildCore
 from django_tex.exceptions import TexError
-
 from django_tex.shortcuts import render_to_pdf
-
 from tests.models import TemplateFile
+from logging import getLogger
+
+logger = getLogger("django-tex")
 
 
 class RunningTex(TestCase):
@@ -64,6 +64,36 @@ class RunningTex(TestCase):
 
         with self.assertRaises(Exception):
             pdf = run_tex(source)  # should raise
+
+    @override_settings(PRINTING_DEVICE_OPTIONS='-f')
+    @override_settings(LATEX_UNIX_PRINT_COMMAND='test')
+    def test_print_unix_pdf(self):
+        if sys.platform.startswith("win"):
+            logger.warning("Unix Printing Test is deactivated under Windows!")
+        else:
+            # We only do a fake test, as I do not know of any real test that checks if a print was really successful.
+            source = "\
+            \\documentclass{article}\n\
+            \\begin{document}\n\
+            This is a test!\n\
+            \\end{document}"
+            tex_core = TexBuildCore(source)
+            tex_core.print_pdf_unix()
+
+    @override_settings(LATEX_UNIX_PRINT_COMMAND='false')
+    def test_print_unix_pdf_fail(self):
+        if sys.platform.startswith("win"):
+            logger.warning("Unix Printing Test is deactivated under Windows!")
+        else:
+            # We only do a fake test, as I do not know of any real test that checks if a print was really successful.
+            source = "\
+            \\documentclass{article}\n\
+            \\begin{document}\n\
+            This is a test!\n\
+            \\end{document}"
+            tex_core = TexBuildCore(source)
+            with self.assertRaises(Exception):
+                tex_core.print_pdf_unix()
 
 
 class Exceptions(TestCase):
