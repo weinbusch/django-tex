@@ -25,6 +25,7 @@ class TexBuildCore:
     def __init__(self, source: str, base_filename: str = 'texput'):
         self.source = source
         self.base_filename = base_filename
+        self._extra_printing_option: str = ""
 
     def _process_tex(self, call_back: Callable):
         """
@@ -79,7 +80,7 @@ class TexBuildCore:
         else:
             device_selection = PRINTING_DEVICE_OPTIONS[print_command].format(quote(printer))
             print_command = f"{print_command} {device_selection}"
-        full_command = f"{print_command} {print_options} {quote(pdf_filename)}"
+        full_command = f"{print_command} {print_options} {self._extra_printing_option} {quote(pdf_filename)}"
         process = run(full_command, shell=True, stdout=PIPE, stderr=PIPE)
         if process.returncode != 0:
             raise PrintError(f"Printing with '{full_command}' resulted in an error. '{process.stderr.decode('utf-8')}'")
@@ -87,7 +88,8 @@ class TexBuildCore:
             logger.warning(f"Printing with '{full_command}' did not result in an error but still wrote something, "
                            f"to stderr. ''{process.stderr.decode('utf-8')}")
 
-    def print_pdf_unix(self):
+    def print_pdf_unix(self, extra_printing_option: str):
+        self._extra_printing_option = extra_printing_option
         return self._process_tex(self._print_pdf_worker_unix)
 
 
