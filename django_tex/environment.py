@@ -2,6 +2,7 @@ from jinja2 import Environment
 
 from django_tex.filters import FILTERS
 
+
 def environment(**options):
     options.update(
         {

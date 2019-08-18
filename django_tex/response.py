@@ -1,5 +1,6 @@
 from django.http import HttpResponse
 
+
 class PDFResponse(HttpResponse):
 
     def __init__(self, content, filename=None):

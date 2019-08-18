@@ -1,8 +1,10 @@
 from django.utils.formats import localize_input
 from django.template.defaultfilters import register
 
+
 def do_linebreaks(value):
     return value.replace('\n', '\\\\\n')
+
 
 def do_latex_escape(value):
     return (value
@@ -14,6 +16,7 @@ def do_latex_escape(value):
         .replace('{', '\\{')
         .replace('}', '\\}')
         )
+
 
 tex_specific_filters = {
     'localize': localize_input,

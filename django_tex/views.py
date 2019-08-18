@@ -1,5 +1,6 @@
 import warnings
 
+
 def render_to_pdf(*args, **kwargs):
     from django_tex.shortcuts import render_to_pdf as func
     warnings.warn(
