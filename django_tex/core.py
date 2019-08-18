@@ -13,6 +13,13 @@ logger = getLogger("django_tex")
 
 DEFAULT_INTERPRETER = 'lualatex'
 
+# Every printing command uses a different parameter to define the destination printer
+# we define them here
+PRINTING_DEVICE_OPTIONS = {
+    'lp': "-d {}",
+    'lpr': "-P {}",
+}
+
 
 class TexBuildCore:
     def __init__(self, source: str, base_filename: str = 'texput'):
@@ -61,10 +68,17 @@ class TexBuildCore:
     def _print_pdf_worker_unix(self, tempdir: str, pdf_filename: str):
         pdf_filename = os.path.join(tempdir, pdf_filename)
         printer = getattr(settings, 'LATEX_PRINTER', None)
-        if printer is None:
-            logger.debug("No default printer set, using default")
         print_command = getattr(settings, 'LATEX_UNIX_PRINT_COMMAND', 'lpr')
         print_options = getattr(settings, 'LATEX_UNIX_PRINT_OPTIONS', '')
+        if printer is None:
+            logger.debug("No default printer set, using default.")
+        elif print_command not in PRINTING_DEVICE_OPTIONS:
+            logger.warning(f"The unknown custom printing command '{print_command}' was defined and as well as a "
+                           f"non default printer. Please edit 'PRINTING_DEVICE_OPTIONS' in the module according to your "
+                           f"needs.")
+        else:
+            device_selection = PRINTING_DEVICE_OPTIONS[print_command].format(quote(printer))
+            print_command = f"{print_command} {device_selection}"
         full_command = f"{print_command} {print_options} {quote(pdf_filename)}"
         process = run(full_command, shell=True, stdout=PIPE, stderr=PIPE)
         if process.returncode != 0:
