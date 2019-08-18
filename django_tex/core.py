@@ -3,7 +3,7 @@ from subprocess import PIPE, run
 from logging import getLogger
 from shlex import quote
 import tempfile
-from typing import Callable
+from typing import Callable, Any, Dict
 from django.template.loader import get_template
 from django_tex.exceptions import TexError, PrintError
 from django.conf import settings
@@ -103,12 +103,21 @@ def compile_template_to_pdf(template_name, context):
     return run_tex(source)
 
 
-def compile_template_and_sent_to_printer(template_name, context, extra_options=""):
+def compile_template_and_sent_to_printer(template_name: str, context: Dict[str, Any], extra_options=""):
+    """
+    Compile the template_name using context dict and sent the generated pdf to the printer
+    :param template_name:  the latex template to fill and generate the pdf from
+    :param context: data to fill the template
+    :param extra_options: extra options for the printing command
+    :exception PrintError - printing command failed
+    :exception TexError - could no compile tex file
+    :return: None
+    """
     source = render_template_with_context(template_name, context)
     build_core = TexBuildCore(source)
     build_core.print_pdf_unix(extra_options)
 
 
-def render_template_with_context(template_name, context):
+def render_template_with_context(template_name: str, context: Dict[str, Any]):
     template = get_template(template_name, using='tex')
     return template.render(context)
