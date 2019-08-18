@@ -103,6 +103,12 @@ def compile_template_to_pdf(template_name, context):
     return run_tex(source)
 
 
+def compile_template_and_sent_to_printer(template_name, context, extra_options=""):
+    source = render_template_with_context(template_name, context)
+    build_core = TexBuildCore(source)
+    build_core.print_pdf_unix(extra_options)
+
+
 def render_template_with_context(template_name, context):
     template = get_template(template_name, using='tex')
     return template.render(context)
