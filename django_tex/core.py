@@ -88,7 +88,7 @@ class TexBuildCore:
             logger.warning(f"Printing with '{full_command}' did not result in an error but still wrote something, "
                            f"to stderr. ''{process.stderr.decode('utf-8')}")
 
-    def print_pdf_unix(self, extra_printing_option: str):
+    def print_pdf_unix(self, extra_printing_option: str = ""):
         self._extra_printing_option = extra_printing_option
         return self._process_tex(self._print_pdf_worker_unix)
 
