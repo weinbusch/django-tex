@@ -8,7 +8,7 @@ addons:
       - latexmk
 env:
   - DJANGO_VERSION=1.11.4
-  - DJANGO_VERSION=2.1.5
+  - DJANGO_VERSION=2.2.5
 install:
   - pip install Django~=$DJANGO_VERSION
   - pip install -r requirements.txt
@@ -22,4 +22,4 @@ deploy:
   on:
     tags: true
     branch: master
-    condition: "$DJANGO_VERSION = 1.11.4"
+    condition: "$DJANGO_VERSION = 2.2.5"
