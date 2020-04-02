@@ -18,9 +18,10 @@ def run_tex(source):
 def run_tex_in_directory(source, directory):
     filename = "texput.tex"
     command = getattr(settings, "LATEX_INTERPRETER", DEFAULT_INTERPRETER)
+    latex_interpreter_options = getattr(settings, "LATEX_INTERPRETER_OPTIONS", "")
     with open(os.path.join(directory, filename), "x", encoding="utf-8") as f:
         f.write(source)
-    args = f'cd "{directory}" && {command} -interaction=batchmode {filename}'
+    args = f'cd "{directory}" && {command} -interaction=batchmode {latex_interpreter_options} {filename}'
     try:
         run(args, shell=True, stdout=PIPE, stderr=PIPE, check=True)
     except CalledProcessError as called_process_error:
