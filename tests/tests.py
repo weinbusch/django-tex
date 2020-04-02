@@ -83,7 +83,6 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertEqual(source, cm.exception.source)
         self.assertRegex(cm.exception.log, r"^This is LuaTeX")
         self.assertRegex(cm.exception.message, r"^! Emergency stop")
         self.assertRegex(
@@ -126,7 +125,6 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertEqual(source, cm.exception.source)
         self.assertRegex(cm.exception.log, r"^This is LuaTeX")
         self.assertRegex(cm.exception.message, r"^! Undefined control sequence")
 
@@ -295,7 +293,9 @@ class TemplateLanguage(TestCase):
             )
         with override_settings(LATEX_INTERPRETER="lualatex"):
             output = self.render_template(template_string)
-            self.assertEqual(output, "\\graphicspath{ {c:/foo/bar/} {c:/bar baz/foo/} }")
+            self.assertEqual(
+                output, "\\graphicspath{ {c:/foo/bar/} {c:/bar baz/foo/} }"
+            )
 
 
 class Models(TestCase):

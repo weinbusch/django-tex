@@ -1,5 +1,5 @@
 import os
-from subprocess import PIPE, run
+from subprocess import PIPE, run, CalledProcessError
 import tempfile
 
 from django.template.loader import get_template
@@ -12,24 +12,29 @@ DEFAULT_INTERPRETER = "lualatex"
 
 def run_tex(source):
     with tempfile.TemporaryDirectory() as tempdir:
-        filename = os.path.join(tempdir, "texput.tex")
-        with open(filename, "x", encoding="utf-8") as f:
-            f.write(source)
-        latex_interpreter = getattr(settings, "LATEX_INTERPRETER", DEFAULT_INTERPRETER)
-        latex_interpreter_options = getattr(settings, "LATEX_INTERPRETER_OPTIONS", "")
-        latex_command = f'cd "{tempdir}" && {latex_interpreter} -interaction=batchmode {latex_interpreter_options} {os.path.basename(filename)}'
-        process = run(latex_command, shell=True, stdout=PIPE, stderr=PIPE)
+        return run_tex_in_directory(source, directory=tempdir)
+
+
+def run_tex_in_directory(source, directory):
+    filename = "texput.tex"
+    command = getattr(settings, "LATEX_INTERPRETER", DEFAULT_INTERPRETER)
+    with open(os.path.join(directory, filename), "x", encoding="utf-8") as f:
+        f.write(source)
+    args = f'cd "{directory}" && {command} -interaction=batchmode {filename}'
+    try:
+        run(args, shell=True, stdout=PIPE, stderr=PIPE, check=True)
+    except CalledProcessError as called_process_error:
         try:
-            if process.returncode == 1:
-                with open(os.path.join(tempdir, "texput.log"), encoding="utf8") as f:
-                    log = f.read()
-                raise TexError(log=log, source=source)
-            with open(os.path.join(tempdir, "texput.pdf"), "rb") as pdf_file:
-                pdf = pdf_file.read()
+            with open(
+                os.path.join(directory, "texput.log"), "r", encoding="utf-8"
+            ) as f:
+                log = f.read()
         except FileNotFoundError:
-            if process.stderr:
-                raise Exception(process.stderr.decode("utf-8"))
-            raise
+            raise called_process_error
+        else:
+            raise TexError(log)
+    with open(os.path.join(directory, "texput.pdf"), "rb") as f:
+        pdf = f.read()
     return pdf
 
 

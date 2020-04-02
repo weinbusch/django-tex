@@ -27,9 +27,8 @@ def tokenizer(code):
 
 
 class TexError(Exception):
-    def __init__(self, log, source):
+    def __init__(self, log):
         self.log = log
-        self.source = source
         self.tokens = list(tokenizer(self.log))
         self.message = self.get_message()
 
