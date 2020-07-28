@@ -127,6 +127,7 @@ class Exceptions(TestCase):
 
         self.assertRegex(cm.exception.log, r"^This is LuaTeX")
         self.assertRegex(cm.exception.message, r"^! Undefined control sequence")
+        self.assertRegex(cm.exception.message, r"l\.3")
 
 
 class RenderingTemplates(TestCase):
