@@ -119,7 +119,7 @@ class Exceptions(TestCase):
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
-        \\unkown{command}\n\
+        \\unknown{command}\n\
         \\end{document}\n"
 
         with self.assertRaises(TexError) as cm:
@@ -128,6 +128,43 @@ class Exceptions(TestCase):
         self.assertRegex(cm.exception.log, r"^This is LuaTeX")
         self.assertRegex(cm.exception.message, r"^! Undefined control sequence")
         self.assertRegex(cm.exception.message, r"l\.3")
+
+    def test_template_debug(self):
+        source = (
+            "\\documentclass{article}\n"
+            "\\begin{document}\n"
+            "\\unknown{command}\n"
+            "\\end{document}\n"
+        )
+
+        with self.assertRaises(TexError) as cm:
+            run_tex(source)
+
+        template_debug = cm.exception.template_debug
+
+        self.assertEqual(template_debug["during"], "\\unknown{command}")
+
+    def test_template_error_context(self):
+        source = (
+            "\\documentclass{article}\n"
+            "\\begin{document}\n"
+            "\\unknown{command}\n"
+            "\\end{document}\n"
+        )
+
+        with self.assertRaises(TexError) as cm:
+            run_tex(source)
+
+        message = cm.exception.message
+
+        expected_context = (
+            "1 \\documentclass{article}\n"
+            "2 \\begin{document}\n"
+            "3 \\unknown{command}\n"
+            "4 \\end{document}"
+        )
+
+        self.assertIn(expected_context, message)
 
 
 class RenderingTemplates(TestCase):

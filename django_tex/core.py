@@ -33,7 +33,7 @@ def run_tex_in_directory(source, directory):
         except FileNotFoundError:
             raise called_process_error
         else:
-            raise TexError(log)
+            raise TexError(log=log, source=source)
     with open(os.path.join(directory, "texput.pdf"), "rb") as f:
         pdf = f.read()
     return pdf
