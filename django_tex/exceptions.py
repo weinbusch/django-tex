@@ -14,7 +14,7 @@ ERROR = re.compile(r"|".join(error_patterns), re.DOTALL + re.MULTILINE)
 class TexError(Exception):
     def __init__(self, log, source):
         self.log = log
-        self.source = source
+        self.source = source.splitlines()
 
         mo = ERROR.search(self.log)
 
@@ -22,18 +22,19 @@ class TexError(Exception):
 
         if mo.group("lineno"):
             lineno = int(mo.group("lineno")) - 1
-            source_lines = source.splitlines()
-            total = len(source_lines)
+            total = len(self.source)
             top = max(0, lineno - 5)
             bottom = min(lineno + 5, total)
+            source_lines = list(enumerate(self.source[top:bottom], top + 1))
+            line, during = source_lines[lineno - top]
 
             self.template_debug = {
                 "name": "template",
-                "message": mo.group(),
-                "source_lines": list(enumerate(source_lines[top:bottom], top + 1)),
-                "line": lineno + 1,
+                "message": self.message,
+                "source_lines": source_lines,
+                "line": line,
                 "before": "",
-                "during": source_lines[lineno],
+                "during": during,
                 "after": "",
                 "total": total,
                 "top": top,

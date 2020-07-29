@@ -143,12 +143,19 @@ class Exceptions(TestCase):
         template_debug = cm.exception.template_debug
 
         self.assertEqual(template_debug["during"], "\\unknown{command}")
+        self.assertEqual(template_debug["line"], 3)
 
     def test_template_error_context(self):
         source = (
             "\\documentclass{article}\n"
+            "\n"
+            "\n"
+            "\n"
+            "\n"
             "\\begin{document}\n"
             "\\unknown{command}\n"
+            "\n"
+            "\n"
             "\\end{document}\n"
         )
 
@@ -158,10 +165,15 @@ class Exceptions(TestCase):
         message = cm.exception.message
 
         expected_context = (
-            "1 \\documentclass{article}\n"
-            "2 \\begin{document}\n"
-            "3 \\unknown{command}\n"
-            "4 \\end{document}"
+            " 2 \n"
+            " 3 \n"
+            " 4 \n"
+            " 5 \n"
+            " 6 \\begin{document}\n"
+            " 7 \\unknown{command}\n"
+            " 8 \n"
+            " 9 \n"
+            "10 \\end{document}"
         )
 
         self.assertIn(expected_context, message)
