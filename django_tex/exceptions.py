@@ -12,7 +12,7 @@ ERROR = re.compile(r"|".join(error_patterns), re.DOTALL + re.MULTILINE)
 
 
 class TexError(Exception):
-    def __init__(self, log, source):
+    def __init__(self, log, source, template_name=None):
         self.log = log
         self.source = source.splitlines()
 
@@ -29,7 +29,7 @@ class TexError(Exception):
             line, during = source_lines[lineno - top]
 
             self.template_debug = {
-                "name": "template",
+                "name": template_name,
                 "message": self.message,
                 "source_lines": source_lines,
                 "line": line,

@@ -10,12 +10,12 @@ from django.conf import settings
 DEFAULT_INTERPRETER = "lualatex"
 
 
-def run_tex(source):
+def run_tex(source, template_name=None):
     with tempfile.TemporaryDirectory() as tempdir:
-        return run_tex_in_directory(source, directory=tempdir)
+        return run_tex_in_directory(source, tempdir, template_name=template_name)
 
 
-def run_tex_in_directory(source, directory):
+def run_tex_in_directory(source, directory, template_name=None):
     filename = "texput.tex"
     command = getattr(settings, "LATEX_INTERPRETER", DEFAULT_INTERPRETER)
     latex_interpreter_options = getattr(settings, "LATEX_INTERPRETER_OPTIONS", "")
@@ -33,7 +33,7 @@ def run_tex_in_directory(source, directory):
         except FileNotFoundError:
             raise called_process_error
         else:
-            raise TexError(log=log, source=source)
+            raise TexError(log=log, source=source, template_name=template_name)
     with open(os.path.join(directory, "texput.pdf"), "rb") as f:
         pdf = f.read()
     return pdf
@@ -41,7 +41,7 @@ def run_tex_in_directory(source, directory):
 
 def compile_template_to_pdf(template_name, context):
     source = render_template_with_context(template_name, context)
-    return run_tex(source)
+    return run_tex(source, template_name=template_name)
 
 
 def render_template_with_context(template_name, context):
