@@ -23,4 +23,5 @@ deploy:
   on:
     tags: true
     branch: master
-    condition: "($DJANGO_VERSION = 3.0) AND (python = 3.8)"
+    python: 3.8
+    condition: "$DJANGO_VERSION = 3.0"
