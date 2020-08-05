@@ -6,3 +6,5 @@ build/
 .eggs/
 .idea/
 env/
+venv
+.vscode

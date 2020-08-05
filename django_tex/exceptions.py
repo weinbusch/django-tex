@@ -1,42 +1,54 @@
 import re
 
 
-def prettify_message(message):
-    """
-    Helper methods that removes consecutive whitespaces and newline characters
-    """
-    # Replace consecutive whitespaces with a single whitespace
-    message = re.sub(r"[ ]{2,}", " ", message)
-    # Replace consecutive newline characters, optionally separated by whitespace, with a single newline
-    message = re.sub(r"([\r\n][ \t]*)+", "\n", message)
-    return message
+error_patterns = [
+    r"^\!.*?l\.(?P<lineno>\d+).*?$",
+    r"^\! Emergency stop.*?\*{3}.*?$",
+    r"^\!.*?$",
+]
 
 
-def tokenizer(code):
-    token_specification = [
-        ("ERROR", r"\! (.+[\r\n])+[\r\n]*"),
-        ("WARNING", r"latex warning.*"),
-        ("NOFILE", r"no file.*"),
-    ]
-    token_regex = "|".join(
-        "(?P<{}>{})".format(label, regex) for label, regex in token_specification
-    )
-    for m in re.finditer(token_regex, code, re.IGNORECASE):
-        token_dict = dict(type=m.lastgroup, message=prettify_message(m.group()))
-        yield token_dict
+ERROR = re.compile(r"|".join(error_patterns), re.DOTALL + re.MULTILINE)
 
 
 class TexError(Exception):
-    def __init__(self, log):
+    def __init__(self, log, source, template_name=None):
         self.log = log
-        self.tokens = list(tokenizer(self.log))
-        self.message = self.get_message()
+        self.source = source.splitlines()
 
-    def get_message(self):
-        for token in self.tokens:
-            if token["type"] == "ERROR":
-                return token["message"]
-        return "No error message found in log"
+        mo = ERROR.search(self.log)
+
+        self.message = mo.group() or "No error message found."
+
+        if mo.group("lineno"):
+            lineno = int(mo.group("lineno")) - 1
+            total = len(self.source)
+            top = max(0, lineno - 5)
+            bottom = min(lineno + 5, total)
+            source_lines = list(enumerate(self.source[top:bottom], top + 1))
+            line, during = source_lines[lineno - top]
+
+            self.template_debug = {
+                "name": template_name,
+                "message": self.message,
+                "source_lines": source_lines,
+                "line": line,
+                "before": "",
+                "during": during,
+                "after": "",
+                "total": total,
+                "top": top,
+                "bottom": bottom,
+            }
+
+            width = len(str(bottom + 1))
+
+            template_context = "\n".join(
+                "{lineno:>{width}} {line}".format(lineno=lineno, width=width, line=line)
+                for lineno, line in source_lines
+            )
+
+            self.message += "\n\n" + template_context
 
     def __str__(self):
         return self.message
