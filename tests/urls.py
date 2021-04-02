@@ -22,12 +22,9 @@ def escape(request):
         # With letters and spaces separating
         r"& A % A $ A # A _ A { A } A ~ A ^ A \ FINAL",
         # Test everything that is printable
-        string.printable
+        string.printable,
     ]
     return render_to_pdf(request, "tests/test_escape.tex", {"names": names})
 
 
-urlpatterns = [
-    path("", index, name="index"),
-    path("escape", escape, name="escape")
-]
+urlpatterns = [path("", index, name="index"), path("escape", escape, name="escape")]

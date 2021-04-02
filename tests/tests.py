@@ -302,31 +302,31 @@ class TemplateLanguage(TestCase):
     def test_escape_no_space(self):
         self.check_escape(
             r"&%$#_{}~^\FINAL",
-            r"\&\%\$\#\_\{\}\textasciitilde \textasciicircum \textbackslash FINAL"
+            r"\&\%\$\#\_\{\}\textasciitilde \textasciicircum \textbackslash FINAL",
         )
 
     def test_escape_space(self):
         self.check_escape(
             r"& % $  # _ { } ~ ^ \ FINAL",
             r"\& \% \$  \# \_ \{ \} \textasciitilde\space \textasciicircum\space "
-            r"\textbackslash\space FINAL"
+            r"\textbackslash\space FINAL",
         )
 
     def test_escape_character(self):
         self.check_escape(
             r"&A%A$A#A_A{A}A~A^A\FINAL",
             r"\&A\%A\$A\#A\_A\{A\}A\textasciitilde A\textasciicircum A"
-            r"\textbackslash FINAL"
+            r"\textbackslash FINAL",
         )
 
     def test_linebreaks(self):
         context = {
-            "brecht": "Ich sitze am Straßenhang.\n" + "Der Fahrer wechselt das Rad."
+            "brecht": "Ich sitze am Straßenhang." + "\nDer Fahrer wechselt das Rad."
         }
         template_string = "{{ brecht | linebreaks }}"
         output = self.render_template(template_string, context)
         self.assertEqual(
-            output, "Ich sitze am Straßenhang.\\\\\n" + "Der Fahrer wechselt das Rad."
+            output, r"Ich sitze am Straßenhang.\\" + "\nDer Fahrer wechselt das Rad."
         )
         # Render with default django renderer
         output = self.render_template(template_string, context, using="django")
