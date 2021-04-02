@@ -16,8 +16,8 @@ from django_tex.exceptions import TexError
 
 from django_tex.shortcuts import render_to_pdf
 
-from tests.models import TemplateFile
-from tests.urls import ESCAPE_CONTEXT
+from .models import TemplateFile
+from .contants import ESCAPE_CONTEXT, UNICODE_TEST, ESCAPE_CONTEXT_SPECIAL_UNICODE
 
 
 class RunningTex(TestCase):
@@ -230,7 +230,7 @@ class CompilingTemplates(TestCase):
             "test": "a simple test",
             "number": Decimal("1000.10"),
             "date": datetime.date(2017, 10, 25),
-            "names": ["äüößéèô"],
+            "names": [UNICODE_TEST],
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
@@ -242,9 +242,12 @@ class CompilingTemplates(TestCase):
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
 
-    def do_compile_escape(self):
+    def do_compile_escape(self, special_unicode: bool = False):
         template_name = "tests/test_escape.tex"
-        pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT)
+        if special_unicode:
+            pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT_SPECIAL_UNICODE)
+        else:
+            pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT)
         self.assertIsNotNone(pdf)
 
     def test_escape_default_compiler(self):
@@ -252,7 +255,11 @@ class CompilingTemplates(TestCase):
 
     @override_settings(LATEX_INTERPRETER="pdflatex")
     def test_escape_pdflatex(self):
-        self.do_compile_escape()
+        self.do_compile_escape(True)
+
+    @override_settings(LATEX_INTERPRETER="xelatex")
+    def test_escape_pdflatex(self):
+        self.do_compile_escape(True)
 
     @override_settings(LATEX_INTERPRETER="pdflatex")
     def test_escape_pdflatex(self):
