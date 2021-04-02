@@ -17,6 +17,7 @@ from django_tex.exceptions import TexError
 from django_tex.shortcuts import render_to_pdf
 
 from tests.models import TemplateFile
+from tests.urls import ESCAPE_CONTEXT
 
 
 class RunningTex(TestCase):
@@ -240,6 +241,26 @@ class CompilingTemplates(TestCase):
         context = {}
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
+
+    def do_compile_escape(self):
+        template_name = "tests/test_escape.tex"
+        pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT)
+        self.assertIsNotNone(pdf)
+
+    def test_escape_default_compiler(self):
+        self.do_compile_escape()
+
+    @override_settings(LATEX_INTERPRETER="pdflatex")
+    def test_escape_pdflatex(self):
+        self.do_compile_escape()
+
+    @override_settings(LATEX_INTERPRETER="pdflatex")
+    def test_escape_pdflatex(self):
+        self.do_compile_escape()
+
+    @override_settings(LATEX_INTERPRETER="latexmk -pdf")
+    def test_escape_latxmk(self):
+        self.do_compile_escape()
 
 
 class TemplateLanguage(TestCase):
