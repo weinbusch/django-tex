@@ -38,6 +38,9 @@ def do_latex_escape(value: str) -> str:
         .replace("_", r"\_")
         .replace("{", r"\{")
         .replace("}", r"\}")
+        # Replace vertical tab as this seems to be the only character from
+        # string.printable that can't be consumed from LaTeX
+        .replace(chr(11), "")
     )
 
 
