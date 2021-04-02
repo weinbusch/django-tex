@@ -8,10 +8,10 @@ def index(request):
 
 
 def escape(request):
-
     names = [
-        "& % $  # _ { }",
-        "&%$ #_{}"
+        r"& % $  # _ { } ~ ^ \ FINAL",  # With spaces
+        r"&%$#_{}~^\FINAL",  # Without spaces
+        r"&A%A$A#A_A{A}A~A^A\FINAL",  # With letters separating
     ]
 
     return render_to_pdf(request, "tests/test_escape.tex", {"names": names})
