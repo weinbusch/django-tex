@@ -293,12 +293,31 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, "äüßéô")
 
-    def test_escaping_special_characters(self):
+    def check_escape(self, value: str, expected: str):
         template_string = "{{ value | latex_escape }}"
-        context = {"value": "&$%#_{}"}
+        context = {"value": value}
         output = self.render_template(template_string, context)
-        expected = "\\&\\$\\%\\#\\_\\{\\}"
         self.assertEqual(output, expected)
+
+    def test_escape_no_space(self):
+        self.check_escape(
+            r"&%$#_{}~^\FINAL",
+            r"\&\%\$\#\_\{\}\textasciitilde \textasciicircum \textbackslash FINAL"
+        )
+
+    def test_escape_space(self):
+        self.check_escape(
+            r"& % $  # _ { } ~ ^ \ FINAL",
+            r"\& \% \$  \# \_ \{ \} \textasciitilde\space \textasciicircum\space "
+            r"\textbackslash\space FINAL"
+        )
+
+    def test_escape_character(self):
+        self.check_escape(
+            r"&A%A$A#A_A{A}A~A^A\FINAL",
+            r"\&A\%A\$A\#A\_A\{A\}A\textasciitilde A\textasciicircum A"
+            r"\textbackslash FINAL"
+        )
 
     def test_linebreaks(self):
         context = {
