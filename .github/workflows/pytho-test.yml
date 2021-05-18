@@ -12,6 +12,9 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: Install LaTeX
+        run: | 
+          sudo apt-get texlive-latex-base textlive-xetex latexmk
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
