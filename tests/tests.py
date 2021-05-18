@@ -1,4 +1,5 @@
 import datetime
+import itertools
 from decimal import Decimal
 
 from django.test import TestCase
@@ -242,32 +243,20 @@ class CompilingTemplates(TestCase):
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
 
-    def do_compile_escape(self, special_unicode: bool = False):
+    def test_compile_escape(self):
         template_name = "tests/test_escape.tex"
-        if special_unicode:
-            pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT_SPECIAL_UNICODE)
-        else:
-            pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT)
-        self.assertIsNotNone(pdf)
-
-    def test_escape_default_compiler(self):
-        self.do_compile_escape()
-
-    @override_settings(LATEX_INTERPRETER="pdflatex")
-    def test_escape_pdflatex(self):
-        self.do_compile_escape(True)
-
-    @override_settings(LATEX_INTERPRETER="xelatex")
-    def test_escape_pdflatex(self):
-        self.do_compile_escape(True)
-
-    @override_settings(LATEX_INTERPRETER="pdflatex")
-    def test_escape_pdflatex(self):
-        self.do_compile_escape()
-
-    @override_settings(LATEX_INTERPRETER="latexmk -pdf")
-    def test_escape_latxmk(self):
-        self.do_compile_escape()
+        interpreters = ["pdflatex", "xelatex", "latexmk -pdf"]
+        flags = [True, False]
+        for name, flag in itertools.product(interpreters, flags):
+            with self.subTest(name=name, flag=flag):
+                with self.settings(LATEX_INTERPRETER=name):
+                    if flag:
+                        pdf = compile_template_to_pdf(
+                            template_name, ESCAPE_CONTEXT_SPECIAL_UNICODE
+                        )
+                    else:
+                        pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT)
+                    self.assertIsNotNone(pdf)
 
 
 class TemplateLanguage(TestCase):
