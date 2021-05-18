@@ -258,26 +258,18 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, "\\section{bar}")
 
-    @override_settings(LANGUAGE_CODE="en")
-    def test_override_l10n_setting(self):
-        context = {"foo": Decimal("1000.10")}
+    def test_localization(self):
         template_string = "{{ foo|localize }}"
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, "1000.10")
-
-    @override_settings(LANGUAGE_CODE="de-de")
-    def test_localize_decimal(self):
-        context = {"foo": Decimal("1000.10")}
-        template_string = "{{ foo|localize }}"
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, "1000,10")
-
-    @override_settings(LANGUAGE_CODE="de-de")
-    def test_localize_date(self):
-        context = {"foo": datetime.date(2017, 10, 25)}
-        template_string = "{{ foo|localize }}"
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, "25.10.2017")
+        parameters = [
+            ("en", Decimal("1000.10"), "1000.10"),
+            ("de-de", Decimal("1000.10"), "1000,10"),
+            ("de-de", datetime.date(2017, 10, 25), "25.10.2017")
+        ]
+        for lang, value, expected in parameters:
+            with self.subTest(lang=lang, value=value):
+                with self.settings(LANGUAGE_CODE=lang):
+                    output = self.render_template(template_string, {"foo": value})
+                    self.assertEqual(output, expected)
 
     @override_settings(LANGUAGE_CODE="de-de")
     def test_format_long_date(self):
