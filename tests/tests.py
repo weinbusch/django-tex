@@ -27,40 +27,22 @@ class RunningTex(TestCase):
     """
 
     def test_run_tex(self):
+        """Call different LaTex interpreters with very simple template"""
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
         This is a test!\n\
         \\end{document}"
-
-        pdf = run_tex(source)
-        self.assertIsNotNone(pdf)
-
-    @override_settings(LATEX_INTERPRETER="pdflatex")
-    def test_different_latex_interpreter(self):
-        """The default interpreter is lualatex"""
-        source = "\
-        \\documentclass{article}\n\
-        \\begin{document}\n\
-        This is a test!\n\
-        \\end{document}"
-
-        pdf = run_tex(source)
-        self.assertIsNotNone(pdf)
-
-    @override_settings(LATEX_INTERPRETER="latexmk -pdf")
-    def test_latexmk_test(self):
-        source = "\
-        \\documentclass{article}\n\
-        \\begin{document}\n\
-        This is a test!\n\
-        \\end{document}"
-
-        pdf = run_tex(source)
-        self.assertIsNotNone(pdf)
+        interpreters = ["pdflatex", "latexmk -pdf", "lualatex"]
+        for name in interpreters:
+            with self.subTest(name=name):
+                with self.settings(LATEX_INTERPRETER=name):
+                    pdf = run_tex(source)
+                    self.assertIsNotNone(pdf)
 
     @override_settings(LATEX_INTERPRETER="does_not_exist")
     def test_wrong_latex_interpreter(self):
+        """Using an unknown interpreter raises an Exception"""
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
