@@ -39,7 +39,7 @@ def index(request):
         ],
         "special_characters": "&$%#_{}",
     }
-    return render_to_pdf(request, "tests/test.tex", context)
+    return render_to_pdf(request, "tests/index.tex", context)
 
 
 urlpatterns = [
