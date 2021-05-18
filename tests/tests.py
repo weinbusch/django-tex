@@ -67,7 +67,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertRegex(cm.exception.log, r"^This is LuaTeX")
+        self.assertRegex(cm.exception.log, r"^This is Lua")
         self.assertRegex(cm.exception.message, r"^! Emergency stop")
         self.assertRegex(
             cm.exception.message,
@@ -88,7 +88,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertRegex(cm.exception.log, r"^This is pdfTeX")
+        self.assertRegex(cm.exception.log, r"^This is pdf")
         self.assertRegex(cm.exception.message, r"^! Emergency stop")
         self.assertRegex(
             cm.exception.message,
@@ -109,7 +109,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertRegex(cm.exception.log, r"^This is LuaTeX")
+        self.assertRegex(cm.exception.log, r"^This is Lua")
         self.assertRegex(cm.exception.message, r"^! Undefined control sequence")
         self.assertRegex(cm.exception.message, r"l\.3")
 
