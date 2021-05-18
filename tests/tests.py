@@ -262,7 +262,7 @@ class TemplateLanguage(TestCase):
         parameters = [
             ("en", Decimal("1000.10"), "1000.10"),
             ("de-de", Decimal("1000.10"), "1000,10"),
-            ("de-de", datetime.date(2017, 10, 25), "25.10.2017")
+            ("de-de", datetime.date(2017, 10, 25), "25.10.2017"),
         ]
         for lang, value, expected in parameters:
             with self.subTest(lang=lang, value=value):
@@ -284,31 +284,26 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, "äüßéô")
 
-    def check_escape(self, value: str, expected: str):
+    def test_escape(self):
         template_string = "{{ value | latex_escape }}"
-        context = {"value": value}
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, expected)
-
-    def test_escape_no_space(self):
-        self.check_escape(
-            r"&%$#_{}~^\FINAL",
-            r"\&\%\$\#\_\{\}\textasciitilde \textasciicircum \textbackslash FINAL",
-        )
-
-    def test_escape_space(self):
-        self.check_escape(
-            r"& % $  # _ { } ~ ^ \ FINAL",
-            r"\& \% \$  \# \_ \{ \} \textasciitilde\space \textasciicircum\space "
-            r"\textbackslash\space FINAL",
-        )
-
-    def test_escape_character(self):
-        self.check_escape(
-            r"&A%A$A#A_A{A}A~A^A\FINAL",
-            r"\&A\%A\$A\#A\_A\{A\}A\textasciitilde A\textasciicircum A"
-            r"\textbackslash FINAL",
-        )
+        parameters = [
+            ("&", "\\&"),
+            ("%", "\\%"),
+            ("$", "\\$"),
+            ("#", "\\#"),
+            ("_", "\\_"),
+            ("{", "\\{"),
+            ("}", "\\}"),
+            ("~", "\\textasciitilde{}"),
+            ("^", "\\textasciicircum{}"),
+            ("\\", "\\textbackslash{}"),
+            ("\\\\", "\\textbackslash{}\\textbackslash{}"),
+            ("foo", "foo"),
+        ]
+        for value, expected in parameters:
+            with self.subTest(value):
+                output = self.render_template(template_string, {"value": value})
+                self.assertEqual(output, expected)
 
     def test_linebreaks(self):
         context = {
