@@ -19,15 +19,15 @@ class TexError(Exception):
         
     @property
     def message(self):
-        m = mo.group() or "No error message found."
+        m = self.mo.group() or "No error message found."
         if ctx := self.template_context:
             m += "\n\n" + ctx
         return m
     
     @property
     def template_debug(self):
-        if self.mo.group("lineno"):
-            lineno = int(mo.group("lineno")) - 1
+        if slineno := self.mo.group("lineno"):
+            lineno = int(slineno) - 1
             total = len(self.source)
             top = max(0, lineno - 5)
             bottom = min(lineno + 5, total)
