@@ -15,7 +15,7 @@ setup(
     packages=find_packages(exclude=["tests"]),
     use_scm_version=True,
     setup_requires=["setuptools_scm"],
-    install_requires=["django>=1.11", "jinja2>=2.9"],
+    install_requires=["django>=2.2", "jinja2>=2.9"],
     python_requires=">=3.6.2",
     package_data={"": ["*.tex"]},
 )

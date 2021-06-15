@@ -1,7 +1,5 @@
+from django.urls import path
 import datetime
-
-from django.conf.urls import url
-
 from django_tex.shortcuts import render_to_pdf
 
 
@@ -43,5 +41,5 @@ def index(request):
 
 
 urlpatterns = [
-    url("^$", index, name="index"),
+    path("", index, name="index"),
 ]

@@ -16,7 +16,7 @@ from django_tex.exceptions import TexError
 
 from django_tex.shortcuts import render_to_pdf
 
-from tests.models import TemplateFile
+from .models import TemplateFile
 
 
 class RunningTex(TestCase):
@@ -195,23 +195,18 @@ class CompilingTemplates(TestCase):
     """
 
     def test_compile_template_to_pdf(self):
-        template_name = "tests/test.tex"
-        context = {
-            "test": "a simple test",
-            "number": Decimal("1000.10"),
-            "date": datetime.date(2017, 10, 25),
-            "names": ["Arjen", "Robert", "Mats"],
-        }
-        pdf = compile_template_to_pdf(template_name, context)
-        self.assertIsNotNone(pdf)
+        """test compile_template_to_pdf
 
-    def test_compile_template_with_unicode(self):
+        - accepts template name and context
+        - context may contain unicode characters
+        - produces pdf file
+        """
         template_name = "tests/test.tex"
         context = {
             "test": "a simple test",
             "number": Decimal("1000.10"),
             "date": datetime.date(2017, 10, 25),
-            "names": ["äüößéèô"],
+            "names": ["Arjen", "Robert", "Mats", "äüößéèô♞Ⅷ"],
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
@@ -245,7 +240,7 @@ class TemplateLanguage(TestCase):
         parameters = [
             ("en", Decimal("1000.10"), "1000.10"),
             ("de-de", Decimal("1000.10"), "1000,10"),
-            ("de-de", datetime.date(2017, 10, 25), "25.10.2017")
+            ("de-de", datetime.date(2017, 10, 25), "25.10.2017"),
         ]
         for lang, value, expected in parameters:
             with self.subTest(lang=lang, value=value):
@@ -267,21 +262,35 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, "äüßéô")
 
-    def test_escaping_special_characters(self):
+    def test_escape(self):
         template_string = "{{ value | latex_escape }}"
-        context = {"value": "&$%#_{}"}
-        output = self.render_template(template_string, context)
-        expected = "\\&\\$\\%\\#\\_\\{\\}"
-        self.assertEqual(output, expected)
+        parameters = [
+            ("&", "\\&"),
+            ("%", "\\%"),
+            ("$", "\\$"),
+            ("#", "\\#"),
+            ("_", "\\_"),
+            ("{", "\\{"),
+            ("}", "\\}"),
+            ("~", "\\textasciitilde{}"),
+            ("^", "\\textasciicircum{}"),
+            ("\\", "\\textbackslash{}"),
+            ("\\\\", "\\textbackslash{}\\textbackslash{}"),
+            ("foo", "foo"),
+        ]
+        for value, expected in parameters:
+            with self.subTest(value):
+                output = self.render_template(template_string, {"value": value})
+                self.assertEqual(output, expected)
 
     def test_linebreaks(self):
         context = {
-            "brecht": "Ich sitze am Straßenhang.\n" + "Der Fahrer wechselt das Rad."
+            "brecht": "Ich sitze am Straßenhang." + "\nDer Fahrer wechselt das Rad."
         }
         template_string = "{{ brecht | linebreaks }}"
         output = self.render_template(template_string, context)
         self.assertEqual(
-            output, "Ich sitze am Straßenhang.\\\\\n" + "Der Fahrer wechselt das Rad."
+            output, r"Ich sitze am Straßenhang.\\" + "\nDer Fahrer wechselt das Rad."
         )
         # Render with default django renderer
         output = self.render_template(template_string, context, using="django")
