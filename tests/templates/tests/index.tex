@@ -1,0 +1,22 @@
+\documentclass{article}
+
+\usepackage{ngerman}
+
+\begin{document}
+
+\section{ {{- title -}} }
+
+\begin{itemize}
+{% for item in names %}
+\item {{ item }}
+{% endfor %}
+\end{itemize}
+
+Das ist eine Zahl: {{ number|localize }}. Und das ist ein Datum: {{ date|localize }}.
+
+Das hier sind Sonderzeichen: {{ special_characters | latex_escape }}
+
+Hier sind ein paar ``hard-coded'' Sonderzeichen: \textasciitilde{}
+\textbackslash{} mit Leerzeichen dazwischen.
+
+\end{document}
