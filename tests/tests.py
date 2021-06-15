@@ -1,5 +1,4 @@
 import datetime
-import itertools
 from decimal import Decimal
 
 from django.test import TestCase
@@ -18,7 +17,6 @@ from django_tex.exceptions import TexError
 from django_tex.shortcuts import render_to_pdf
 
 from .models import TemplateFile
-from .contants import ESCAPE_CONTEXT, UNICODE_TEST, ESCAPE_CONTEXT_SPECIAL_UNICODE
 
 
 class RunningTex(TestCase):
@@ -197,23 +195,18 @@ class CompilingTemplates(TestCase):
     """
 
     def test_compile_template_to_pdf(self):
-        template_name = "tests/test.tex"
-        context = {
-            "test": "a simple test",
-            "number": Decimal("1000.10"),
-            "date": datetime.date(2017, 10, 25),
-            "names": ["Arjen", "Robert", "Mats"],
-        }
-        pdf = compile_template_to_pdf(template_name, context)
-        self.assertIsNotNone(pdf)
+        """test compile_template_to_pdf
 
-    def test_compile_template_with_unicode(self):
+        - accepts template name and context
+        - context may contain unicode characters
+        - produces pdf file
+        """
         template_name = "tests/test.tex"
         context = {
             "test": "a simple test",
             "number": Decimal("1000.10"),
             "date": datetime.date(2017, 10, 25),
-            "names": [UNICODE_TEST],
+            "names": ["Arjen", "Robert", "Mats", "äüößéèô♞Ⅷ"],
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
@@ -224,21 +217,6 @@ class CompilingTemplates(TestCase):
         context = {}
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
-
-    def test_compile_escape(self):
-        template_name = "tests/test_escape.tex"
-        interpreters = ["pdflatex", "xelatex", "latexmk -pdf"]
-        flags = [True, False]
-        for name, flag in itertools.product(interpreters, flags):
-            with self.subTest(name=name, flag=flag):
-                with self.settings(LATEX_INTERPRETER=name):
-                    if flag:
-                        pdf = compile_template_to_pdf(
-                            template_name, ESCAPE_CONTEXT_SPECIAL_UNICODE
-                        )
-                    else:
-                        pdf = compile_template_to_pdf(template_name, ESCAPE_CONTEXT)
-                    self.assertIsNotNone(pdf)
 
 
 class TemplateLanguage(TestCase):
