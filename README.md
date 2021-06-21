@@ -101,7 +101,7 @@ settings. Use the filter like this: `{{ foo|localize }}`.
 If you want to convert linebreaks into LaTeX linebreaks (`\\`), use the `linebreaks` filter (`{{ foo | linebreaks }}`).
 ### Escaping LaTeX special characters
 
-To escape LaTeX special characters, use the `escape_latex` filter, i.e. `{{ foo | escape_latex }}`s. 
+To escape LaTeX special characters, use the `latex_escape` filter, i.e. `{{ foo | latex_escape }}`s. 
 This escapes the following characters: `&$%#_{}\^~` 
 ([see also this SO question](https://tex.stackexchange.com/questions/34580/escape-character-in-latex))
 Using this filter all printable character should lead to a successful LaTeX build.
