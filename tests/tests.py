@@ -16,7 +16,7 @@ from django_tex.exceptions import TexError
 
 from django_tex.shortcuts import render_to_pdf
 
-from tests.models import TemplateFile
+from .models import TemplateFile
 
 
 class RunningTex(TestCase):
@@ -25,40 +25,22 @@ class RunningTex(TestCase):
     """
 
     def test_run_tex(self):
+        """Call different LaTex interpreters with very simple template"""
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
         This is a test!\n\
         \\end{document}"
-
-        pdf = run_tex(source)
-        self.assertIsNotNone(pdf)
-
-    @override_settings(LATEX_INTERPRETER="pdflatex")
-    def test_different_latex_interpreter(self):
-        """The default interpreter is lualatex"""
-        source = "\
-        \\documentclass{article}\n\
-        \\begin{document}\n\
-        This is a test!\n\
-        \\end{document}"
-
-        pdf = run_tex(source)
-        self.assertIsNotNone(pdf)
-
-    @override_settings(LATEX_INTERPRETER="latexmk -pdf")
-    def test_latexmk_test(self):
-        source = "\
-        \\documentclass{article}\n\
-        \\begin{document}\n\
-        This is a test!\n\
-        \\end{document}"
-
-        pdf = run_tex(source)
-        self.assertIsNotNone(pdf)
+        interpreters = ["pdflatex", "latexmk -pdf", "lualatex"]
+        for name in interpreters:
+            with self.subTest(name=name):
+                with self.settings(LATEX_INTERPRETER=name):
+                    pdf = run_tex(source)
+                    self.assertIsNotNone(pdf)
 
     @override_settings(LATEX_INTERPRETER="does_not_exist")
     def test_wrong_latex_interpreter(self):
+        """Using an unknown interpreter raises an Exception"""
         source = "\
         \\documentclass{article}\n\
         \\begin{document}\n\
@@ -83,7 +65,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertRegex(cm.exception.log, r"^This is LuaTeX")
+        self.assertRegex(cm.exception.log, r"^This is Lua")
         self.assertRegex(cm.exception.message, r"^! Emergency stop")
         self.assertRegex(
             cm.exception.message,
@@ -104,7 +86,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertRegex(cm.exception.log, r"^This is pdfTeX")
+        self.assertRegex(cm.exception.log, r"^This is pdf")
         self.assertRegex(cm.exception.message, r"^! Emergency stop")
         self.assertRegex(
             cm.exception.message,
@@ -125,7 +107,7 @@ class Exceptions(TestCase):
         with self.assertRaises(TexError) as cm:
             run_tex(source)
 
-        self.assertRegex(cm.exception.log, r"^This is LuaTeX")
+        self.assertRegex(cm.exception.log, r"^This is Lua")
         self.assertRegex(cm.exception.message, r"^! Undefined control sequence")
         self.assertRegex(cm.exception.message, r"l\.3")
 
@@ -213,23 +195,18 @@ class CompilingTemplates(TestCase):
     """
 
     def test_compile_template_to_pdf(self):
-        template_name = "tests/test.tex"
-        context = {
-            "test": "a simple test",
-            "number": Decimal("1000.10"),
-            "date": datetime.date(2017, 10, 25),
-            "names": ["Arjen", "Robert", "Mats"],
-        }
-        pdf = compile_template_to_pdf(template_name, context)
-        self.assertIsNotNone(pdf)
+        """test compile_template_to_pdf
 
-    def test_compile_template_with_unicode(self):
+        - accepts template name and context
+        - context may contain unicode characters
+        - produces pdf file
+        """
         template_name = "tests/test.tex"
         context = {
             "test": "a simple test",
             "number": Decimal("1000.10"),
             "date": datetime.date(2017, 10, 25),
-            "names": ["äüößéèô"],
+            "names": ["Arjen", "Robert", "Mats", "äüößéèô♞Ⅷ"],
         }
         pdf = compile_template_to_pdf(template_name, context)
         self.assertIsNotNone(pdf)
@@ -258,26 +235,18 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, "\\section{bar}")
 
-    @override_settings(LANGUAGE_CODE="en")
-    def test_override_l10n_setting(self):
-        context = {"foo": Decimal("1000.10")}
+    def test_localization(self):
         template_string = "{{ foo|localize }}"
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, "1000.10")
-
-    @override_settings(LANGUAGE_CODE="de-de")
-    def test_localize_decimal(self):
-        context = {"foo": Decimal("1000.10")}
-        template_string = "{{ foo|localize }}"
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, "1000,10")
-
-    @override_settings(LANGUAGE_CODE="de-de")
-    def test_localize_date(self):
-        context = {"foo": datetime.date(2017, 10, 25)}
-        template_string = "{{ foo|localize }}"
-        output = self.render_template(template_string, context)
-        self.assertEqual(output, "25.10.2017")
+        parameters = [
+            ("en", Decimal("1000.10"), "1000.10"),
+            ("de-de", Decimal("1000.10"), "1000,10"),
+            ("de-de", datetime.date(2017, 10, 25), "25.10.2017"),
+        ]
+        for lang, value, expected in parameters:
+            with self.subTest(lang=lang, value=value):
+                with self.settings(LANGUAGE_CODE=lang):
+                    output = self.render_template(template_string, {"foo": value})
+                    self.assertEqual(output, expected)
 
     @override_settings(LANGUAGE_CODE="de-de")
     def test_format_long_date(self):
@@ -293,21 +262,35 @@ class TemplateLanguage(TestCase):
         output = self.render_template(template_string, context)
         self.assertEqual(output, "äüßéô")
 
-    def test_escaping_special_characters(self):
+    def test_escape(self):
         template_string = "{{ value | latex_escape }}"
-        context = {"value": "&$%#_{}"}
-        output = self.render_template(template_string, context)
-        expected = "\\&\\$\\%\\#\\_\\{\\}"
-        self.assertEqual(output, expected)
+        parameters = [
+            ("&", "\\&"),
+            ("%", "\\%"),
+            ("$", "\\$"),
+            ("#", "\\#"),
+            ("_", "\\_"),
+            ("{", "\\{"),
+            ("}", "\\}"),
+            ("~", "\\textasciitilde{}"),
+            ("^", "\\textasciicircum{}"),
+            ("\\", "\\textbackslash{}"),
+            ("\\\\", "\\textbackslash{}\\textbackslash{}"),
+            ("foo", "foo"),
+        ]
+        for value, expected in parameters:
+            with self.subTest(value):
+                output = self.render_template(template_string, {"value": value})
+                self.assertEqual(output, expected)
 
     def test_linebreaks(self):
         context = {
-            "brecht": "Ich sitze am Straßenhang.\n" + "Der Fahrer wechselt das Rad."
+            "brecht": "Ich sitze am Straßenhang." + "\nDer Fahrer wechselt das Rad."
         }
         template_string = "{{ brecht | linebreaks }}"
         output = self.render_template(template_string, context)
         self.assertEqual(
-            output, "Ich sitze am Straßenhang.\\\\\n" + "Der Fahrer wechselt das Rad."
+            output, r"Ich sitze am Straßenhang.\\" + "\nDer Fahrer wechselt das Rad."
         )
         # Render with default django renderer
         output = self.render_template(template_string, context, using="django")
