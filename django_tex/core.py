@@ -21,9 +21,16 @@ def run_tex_in_directory(source, directory, template_name=None):
     latex_interpreter_options = getattr(settings, "LATEX_INTERPRETER_OPTIONS", "")
     with open(os.path.join(directory, filename), "x", encoding="utf-8") as f:
         f.write(source)
-    args = f'cd "{directory}" && {command} -interaction=batchmode {latex_interpreter_options} {filename}'
+    args = f"{command} -interaction=batchmode {latex_interpreter_options} {filename}"
     try:
-        run(args, shell=True, stdout=PIPE, stderr=PIPE, check=True)
+        run(
+            args,
+            shell=True,
+            stdout=PIPE,
+            stderr=PIPE,
+            check=True,
+            cwd=directory,
+        )
     except CalledProcessError as called_process_error:
         try:
             with open(
