@@ -26,13 +26,14 @@ REPLACEMENTS = dict(
 ESCAPE_PATTERN = re.compile("[{}]".format("".join(map(re.escape, REPLACEMENTS.keys()))))
 
 
-def do_latex_escape(value: str) -> str:
+def do_latex_escape(value: object) -> str:
     """
     Replace all LaTeX characters that could cause the latex compiler to fail
     and at the same time try to display the character as intended from the user.
 
     see also https://tex.stackexchange.com/questions/34580/escape-character-in-latex
     """
+    value = str(value)
     return ESCAPE_PATTERN.sub(lambda mo: REPLACEMENTS.get(mo.group()), value)
 
 
